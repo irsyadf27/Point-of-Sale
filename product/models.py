@@ -3,6 +3,9 @@ from __future__ import unicode_literals
 from django.db import models
 from merk.models import Merk
 from warehouse.models import Warehouse
+import qrcode
+import StringIO
+import uuid
 
 # Create your models here.
 class Product(models.Model):
@@ -20,9 +23,27 @@ class Product(models.Model):
     )
     color = models.CharField(max_length=15)
     price = models.FloatField()
+    qrcode = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
 
     def __unicode__(self):
         return "%s (%s) %s" % (self.name, self.size, self.color)
+
+    @property
+    def generate_qrcode(self):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=6,
+            border=0,
+        )
+        qr.add_data(self.qrcode)
+        qr.make(fit=True)
+        img = qr.make_image()
+        output = StringIO.StringIO()
+        img.save(output, "PNG")
+        contents = output.getvalue().encode("base64")
+        output.close()
+        return contents
 
 class ProductWarehouse(models.Model):
     warehouse = models.ForeignKey(Warehouse, related_name='products')

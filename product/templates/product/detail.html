@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Detail Produk{% endblock %}
+{% block content %}
+{% load bootstrap %}
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Detail Produk</h3>
+              </div>
+              <div class="pull-right">
+                <a class="btn btn-default" href="{% url 'product' %}"><i class="fa fa-chevron-left"></i> Produk</a>
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-8 col-sm-8 col-xs-8">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Produk</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <p><h4>Nama:</h4> {{ product.name }}</p>
+                    <p><h4>Merk:</h4> {{ product.merk }}</p>
+                    <p><h4>Seri:</h4> {{ product.serial_number }}</p>
+                    <p><h4>Ukuran:</h4> {{ product.size }}</p>
+                    <p><h4>Warna:</h4> {{ product.color }}</p>
+                    <p><h4>Harga:</h4> Rp. {{ product.price }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-sm-4 col-xs-4">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>QR code</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content text-center">
+                    <img src="data:image/png;base64,{{ product.generate_qrcode }}" class="download-qrcode"/>
+                    <div class="clearfix"></div>
+                    <div class="ln_solid"></div>
+                    <div class="text-center">
+                    <a href="data:image/png;base64,{{ product.generate_qrcode }}" download="{{product.name}}.png" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock %}

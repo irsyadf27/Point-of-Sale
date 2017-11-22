@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.views.generic import ListView, DeleteView, CreateView, UpdateView, DetailView
 from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -9,16 +10,30 @@ from product.models import Product
 from product.forms import ProductForm
 
 # Create your views here.
+#def qrview(request):
+#    return render(request, 'product/qrview.html')
 @login_required
 def home(request):
     return render(request, 'product/product.html')
 
+@login_required
+def qrcode(request, pk):
+    data = get_object_or_404(Product, pk=pk)
+    nama = "%s (%s) %s" % (data.name, data.size, data.color)
+    return HttpResponse('<img src="data:image/png;base64,%s" class="download-qrcode"/><div class="clearfix"></div><div class="ln_solid"></div><div class="text-center"><a href="data:image/png;base64,%s" download="%s.png" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a>' % (data.generate_qrcode, data.generate_qrcode, nama))
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'product/detail.html'
+
 class ProductCreateView(CreateView):
     form_class = ProductForm
     model = Product
-    success_url = reverse_lazy('product')
+    #success_url = reverse_lazy('product')
     template_name = 'product/create.html'
     #fields = ['name', 'merk', 'serial_number', 'size', 'color', 'price', ]
+    def get_success_url(self):
+        return reverse('detail_product',args=(self.object.id,))
 
 class ProductEditView(UpdateView):
     form_class = ProductForm
@@ -59,13 +74,13 @@ class ProductListJson(BaseDatatableView):
         json_data = []
         for item in qs:
             json_data.append([
-                item.name,
+                "<u><a href='%s'>%s</a></u>" % (reverse('detail_product',args=(item.id,)), item.name),
                 item.merk.name,
                 item.serial_number,
                 item.size,
                 item.color,
                 item.price,
-                "<a href='#' class='btn btn-sm btn-default'><i class='fa fa-qrcode'></i> QR Code</a> <a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_produk(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_product', kwargs = {'pk' : item.id, }), item.id)
+                "<a href='#' onclick='javascript: get_qrcode(%s);' class='btn btn-sm btn-default'><i class='fa fa-qrcode'></i> QR Code</a> <a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_produk(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (item.id, reverse('update_product', kwargs = {'pk' : item.id, }), item.id)
             ])
         return json_data
         
