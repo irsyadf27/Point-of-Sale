@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from warehouse.models import Warehouse
+from warehouse.forms import WarehouseForm
 
 # Create your views here.
 @login_required
@@ -13,16 +14,18 @@ def home(request):
     return render(request, 'warehouse/warehouse.html')
 
 class WarehouseCreateView(CreateView):
+    form_class = WarehouseForm
     model = Warehouse
     success_url = reverse_lazy('warehouse')
     template_name = 'warehouse/create.html'
-    fields = ['name', 'address', 'phone', ]
+    #fields = ['name', 'address', 'phone', ]
 
 class WarehouseEditView(UpdateView):
+    form_class = WarehouseForm
     model = Warehouse
     success_url = reverse_lazy('warehouse')
     template_name = 'warehouse/update.html'
-    fields = ['name', 'address', 'phone', ]
+    #fields = ['name', 'address', 'phone', ]
 
 class WarehouseDeleteView(DeleteView):
     model = Warehouse

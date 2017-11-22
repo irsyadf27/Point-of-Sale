@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from merk.models import Merk
+from merk.forms import MerkForm
 
 # Create your views here.
 @login_required
@@ -13,16 +14,18 @@ def home(request):
     return render(request, 'merk/merk.html')
 
 class MerkCreateView(CreateView):
+    form_class = MerkForm
     model = Merk
     success_url = reverse_lazy('merk')
     template_name = 'merk/create.html'
-    fields = ['name', ]
+    #fields = ['name', ]
 
 class MerkEditView(UpdateView):
+    form_class = MerkForm
     model = Merk
     success_url = reverse_lazy('merk')
     template_name = 'merk/update.html'
-    fields = ['name', ]
+    #fields = ['name', ]
 
 class MerkDeleteView(DeleteView):
     model = Merk

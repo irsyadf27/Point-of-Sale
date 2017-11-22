@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from discount.models import Discount
+from discount.forms import DiscountForm
 
 # Create your views here.
 @login_required
@@ -13,16 +14,18 @@ def home(request):
     return render(request, 'discount/discount.html')
 
 class DiscountCreateView(CreateView):
+    form_class = DiscountForm
     model = Discount
     success_url = reverse_lazy('discount')
     template_name = 'discount/create.html'
-    fields = ['name', 'discount_type', 'discount_value', ]
+    #fields = ['name', 'discount_type', 'discount_value', ]
 
 class DiscountEditView(UpdateView):
+    form_class = DiscountForm
     model = Discount
     success_url = reverse_lazy('discount')
     template_name = 'discount/update.html'
-    fields = ['name', 'discount_type', 'discount_value', ]
+    #fields = ['name', 'discount_type', 'discount_value', ]
 
 class DiscountDeleteView(DeleteView):
     model = Discount

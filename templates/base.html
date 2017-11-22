@@ -48,7 +48,7 @@
               </div>
               <div class="profile_info">
                 <span>Welcome,</span>
-                <h2>{{request.user.is_superuser}}</h2>
+                <h2>{{request.user.first_name}} {{request.user.last_name}}</h2>
               </div>
               <div class="clearfix"></div>
             </div>
@@ -65,6 +65,7 @@
                   {% if request.user.is_superuser %}
                   <li><a><i class="fa fa-edit"></i> Data Master <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
+                      <li><a href="{% url 'account' %}">Pengguna</a></li>
                       <li><a href="{% url 'merk' %}">Merk</a></li>
                       <li><a href="{% url 'product' %}">Produk</a></li>
                       <li><a href="{% url 'warehouse' %}">Gudang</a></li>
@@ -144,7 +145,7 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img src="images/img.jpg" alt="">{{request.user.username}}
+                    <img src="images/img.jpg" alt="">{{request.user.first_name}} {{request.user.last_name}}
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">

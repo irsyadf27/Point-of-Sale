@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from customer.models import Customer
+from customer.forms import CustomerForm
 
 # Create your views here.
 @login_required
@@ -13,16 +14,18 @@ def home(request):
     return render(request, 'customer/customer.html')
 
 class CustomerCreateView(CreateView):
+    form_class = CustomerForm
     model = Customer
     success_url = reverse_lazy('customer')
     template_name = 'customer/create.html'
-    fields = ['name', 'address', 'phone', ]
+    #fields = ['name', 'address', 'phone', ]
 
 class CustomerEditView(UpdateView):
+    form_class = CustomerForm
     model = Customer
     success_url = reverse_lazy('customer')
     template_name = 'customer/update.html'
-    fields = ['name', 'address', 'phone', ]
+    #fields = ['name', 'address', 'phone', ]
 
 class CustomerDeleteView(DeleteView):
     model = Customer

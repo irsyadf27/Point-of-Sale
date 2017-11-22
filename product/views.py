@@ -6,6 +6,7 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from product.models import Product
+from product.forms import ProductForm
 
 # Create your views here.
 @login_required
@@ -13,16 +14,18 @@ def home(request):
     return render(request, 'product/product.html')
 
 class ProductCreateView(CreateView):
+    form_class = ProductForm
     model = Product
     success_url = reverse_lazy('product')
     template_name = 'product/create.html'
-    fields = ['name', 'merk', 'serial_number', 'size', 'color', 'price', ]
+    #fields = ['name', 'merk', 'serial_number', 'size', 'color', 'price', ]
 
 class ProductEditView(UpdateView):
+    form_class = ProductForm
     model = Product
     success_url = reverse_lazy('product')
     template_name = 'product/update.html'
-    fields = ['name', 'merk', 'serial_number', 'size', 'color', 'price', ]
+    #fields = ['name', 'merk', 'serial_number', 'size', 'color', 'price', ]
 
 class ProductDeleteView(DeleteView):
     model = Product
@@ -62,7 +65,7 @@ class ProductListJson(BaseDatatableView):
                 item.size,
                 item.color,
                 item.price,
-                "<a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_produk(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_product', kwargs = {'pk' : item.id, }), item.id)
+                "<a href='#' class='btn btn-sm btn-default'><i class='fa fa-qrcode'></i> QR Code</a> <a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_produk(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_product', kwargs = {'pk' : item.id, }), item.id)
             ])
         return json_data
         

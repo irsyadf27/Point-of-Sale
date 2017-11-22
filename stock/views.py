@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from product.models import ProductWarehouse
+from stock.forms import ProductWarehouseForm
 
 # Create your views here.
 @login_required
@@ -14,16 +15,18 @@ def home(request):
     return render(request, 'stock/stock.html')
 
 class StockCreateView(CreateView):
+    form_class = ProductWarehouseForm
     model = ProductWarehouse
     success_url = reverse_lazy('stock')
     template_name = 'stock/create.html'
-    fields = ['warehouse', 'product', 'stock', ]
+    #fields = ['warehouse', 'product', 'stock', ]
 
 class StockEditView(UpdateView):
+    form_class = ProductWarehouseForm
     model = ProductWarehouse
     success_url = reverse_lazy('stock')
     template_name = 'stock/update.html'
-    fields = ['warehouse', 'product', 'stock', ]
+    #fields = ['warehouse', 'product', 'stock', ]
 
 class StockDeleteView(DeleteView):
     model = ProductWarehouse
