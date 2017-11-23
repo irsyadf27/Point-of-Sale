@@ -60,7 +60,7 @@ class MerkListJson(BaseDatatableView):
         for item in qs:
             json_data.append([
                 item.name,
-                item.jumlah_produk,
+                item.num_of_products,
                 "<a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_merk(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_merk', kwargs = {'pk' : item.id, }), item.id)
             ])
         return json_data

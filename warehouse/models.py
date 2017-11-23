@@ -10,3 +10,7 @@ class Warehouse(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def num_of_products(self):
+        return self.products.count()

@@ -24,6 +24,9 @@ class Product(models.Model):
     color = models.CharField(max_length=15)
     price = models.FloatField()
     qrcode = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    
+    def __str__(self):
+        return "%s (%s) %s" % (self.name, self.size, self.color)
 
     def __unicode__(self):
         return "%s (%s) %s" % (self.name, self.size, self.color)
@@ -49,3 +52,6 @@ class ProductWarehouse(models.Model):
     warehouse = models.ForeignKey(Warehouse, related_name='products')
     product = models.ForeignKey(Product, related_name='warehouse')
     stock = models.IntegerField()
+
+    class Meta:
+        unique_together = ('warehouse', 'product')

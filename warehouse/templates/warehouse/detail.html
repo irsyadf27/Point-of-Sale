@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Merk{% endblock %}
+{% block title %}Daftar Produk di {{warehouse.name}}{% endblock %}
 {% block content %}
+{% load bootstrap %}
         <div class="right_col" role="main">
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Kelola Merk</h3>
+                <h3>{{warehouse.name}}</h3>
               </div>
-
               <div class="pull-right">
-                <a class="btn btn-default" href="{% url 'create_merk' %}"><i class="fa fa-plus"></i> Tambah Merk</a>
+                <a class="btn btn-default" href="{% url 'warehouse' %}"><i class="fa fa-chevron-left"></i> Gudang</a>
               </div>
             </div>
 
@@ -19,16 +19,16 @@
               <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Daftar Merk</h2>
+                    <h2>Daftar Produk di {{warehouse.name}}</h2>
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                    <table id="daftar-merk" class="table table-striped table-hover">
+                    <table id="daftar-produk-gudang" class="table table-striped table-hover" data-url="warehouse/product/{{warehouse.id}}/">
                       <thead>
                         <tr>
                           <th>Nama</th>
-                          <th>Jumlah</th>
-                          <th width="150px">Aksi</th>
+                          <th>Stok</th>
+                          <th width="140px">Aksi</th>
                         </tr>
                       </thead>
                       <tbody>

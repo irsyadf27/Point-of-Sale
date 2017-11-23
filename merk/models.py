@@ -10,5 +10,5 @@ class Merk(models.Model):
         return self.name
         
     @property
-    def jumlah_produk(self):
+    def num_of_products(self):
         return self.products.count()

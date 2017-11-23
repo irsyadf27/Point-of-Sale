@@ -70,6 +70,6 @@ class StockListJson(BaseDatatableView):
     def filter_queryset(self, qs):
         search = self.request.GET.get(u'search[value]', None)
         if search:
-            qs = qs.filter(Q(name__contains=search) | Q(product__contains=search))
+            qs = qs.filter(Q(name__contains=search) | Q(product__name__contains=search))
 
         return qs

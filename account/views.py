@@ -6,7 +6,7 @@ from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.contrib.auth.models import User
-from account.forms import AccountForm
+from account.forms import AccountForm, SettingForm
 
 # Create your views here.
 @login_required
@@ -18,6 +18,14 @@ def home(request):
     if not request.user.is_superuser:
         return redirect(reverse_lazy('err_permmision'))
     return render(request, 'account/account.html')
+
+class AccountSettingView(UpdateView):
+    form_class = SettingForm
+    model = User
+    success_url = reverse_lazy('setting_account')
+    template_name = 'account/setting.html'
+    def get_object(self):
+        return User.objects.get(pk=self.request.user.pk)
 
 class AccountCreateView(CreateView):
     form_class = AccountForm

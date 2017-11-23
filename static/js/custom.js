@@ -20,7 +20,7 @@ $(document).ready(function() {
         "serverSide": true,
         "ajax": BASE_URL + "warehouse/data/",
         columnDefs: [
-             { orderable: false, targets: [-1] }
+             { orderable: false, targets: [-1,-2] }
         ]
     });
     $('#daftar-pelanggan').dataTable({
@@ -43,6 +43,22 @@ $(document).ready(function() {
         "processing": true,
         "serverSide": true,
         "ajax": BASE_URL + "stock/data/",
+        columnDefs: [
+             { orderable: false, targets: [-1] }
+        ]
+    });
+    $('#daftar-pengguna').dataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": BASE_URL + "accounts/data/",
+        columnDefs: [
+             { orderable: false, targets: [-1] }
+        ]
+    });
+    $('#daftar-produk-gudang').dataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": BASE_URL + $('#daftar-produk-gudang').data('url'),
         columnDefs: [
              { orderable: false, targets: [-1] }
         ]
@@ -131,4 +147,28 @@ function hapus_stok(id) {
     }).then(function () {
         window.location.href = BASE_URL + 'stock/delete/' + id;
     })
+}
+function hapus_pengguna(id) {
+    swal({
+        title: 'Konfirmasi',
+        text: "Apa anda yakin ingin menghapus pengguna ini?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok',
+        cancelButtonText: 'Cancel'
+    }).then(function () {
+        window.location.href = BASE_URL + 'accounts/delete/' + id;
+    })
+}
+function get_qrcode(id) {
+    $.ajax({
+        url: BASE_URL + 'product/qrcode/' + id,
+        cache: false,
+        success: function(html){
+            $("#body-qrcode").html(html);
+            $('#modal-qrcode').modal('show');
+        }
+    });
 }

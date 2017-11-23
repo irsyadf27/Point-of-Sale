@@ -74,7 +74,7 @@ class ProductListJson(BaseDatatableView):
         json_data = []
         for item in qs:
             json_data.append([
-                "<u><a href='%s'>%s</a></u>" % (reverse('detail_product',args=(item.id,)), item.name),
+                "<u><a href='%s' class='text-primary'>%s</a></u>" % (reverse('detail_product',args=(item.id,)), item.name),
                 item.merk.name,
                 item.serial_number,
                 item.size,
