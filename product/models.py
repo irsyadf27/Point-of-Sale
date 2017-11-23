@@ -4,8 +4,12 @@ from django.db import models
 from merk.models import Merk
 from warehouse.models import Warehouse
 import qrcode
-import StringIO
 import uuid
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 
 # Create your models here.
 class Product(models.Model):
