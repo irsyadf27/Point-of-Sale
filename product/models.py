@@ -46,7 +46,7 @@ class Product(models.Model):
         qr.add_data(self.qrcode)
         qr.make(fit=True)
         img = qr.make_image()
-        output = StringIO.StringIO()
+        output = StringIO()
         img.save(output, "PNG")
         contents = output.getvalue().encode("base64")
         output.close()
