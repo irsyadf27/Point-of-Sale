@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '332nnu5i4==wylw&*447gwd=$mx^c8=mfw14rey=*ov8otoor7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -136,5 +136,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+if DEBUG: 
+   STATIC_ROOT = os.path.join(BASE_DIR, '/static_media_app')
+else:
+   STATIC_ROOT = os.path.join(BASE_DIR, 'static_media_app') 
 
 LOGIN_REDIRECT_URL = '/dashboard'

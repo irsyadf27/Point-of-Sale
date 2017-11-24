@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from POS import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('dashboard.urls')),
+    url(r'^$', include('dashboard.urls')),
     url(r'^accounts/', include('account.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
     url(r'^merk/', include('merk.urls')),

@@ -5,13 +5,13 @@ from warehouse.models import Warehouse
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'merk', 'serial_number', 'size', 'color', 'purchase_price', 'selling_price']
+        fields = ['name', 'merk', 'serial_number', 'size', 'color', 'cost_price', 'selling_price']
         labels = {
             "name": "Nama",
             "serial_number": "Seri",
             "size": "Ukuran",
             "color": "Warna",
-            "purchase_price": "Harga Beli",
+            "cost_price": "Harga Beli",
             "selling_price": "Harga Jual",
         }
 

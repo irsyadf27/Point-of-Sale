@@ -26,7 +26,7 @@ class Product(models.Model):
         choices=choice_size,
     )
     color = models.CharField(max_length=15)
-    purchase_price = models.FloatField(blank=True, default=None)
+    cost_price = models.FloatField(blank=True, default=None)
     selling_price = models.FloatField(blank=True, default=None)
     qrcode = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     

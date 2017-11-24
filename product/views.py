@@ -70,8 +70,8 @@ class ProductDeleteView(DeleteView):
 
 class ProductListJson(BaseDatatableView):
     model = Product
-    columns = ['name', 'merk', 'serial_number', 'size', 'color', 'purchase_price', 'selling_price']
-    order_columns = ['name', 'merk', 'serial_number', 'size', 'color', 'purchase_price', 'selling_price']
+    columns = ['name', 'merk', 'serial_number', 'size', 'color', 'cost_price', 'selling_price']
+    order_columns = ['name', 'merk', 'serial_number', 'size', 'color', 'cost_price', 'selling_price']
     max_display_length = 500
 
     def prepare_results(self, qs):
@@ -83,7 +83,7 @@ class ProductListJson(BaseDatatableView):
                 item.serial_number,
                 item.size,
                 item.color,
-                item.purchase_price,
+                item.cost_price,
                 item.selling_price,
                 "<a href='#' onclick='javascript: get_qrcode(%s);' class='btn btn-sm btn-default'><i class='fa fa-qrcode'></i> QR Code</a> <a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_produk(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (item.id, reverse('update_product', kwargs = {'pk' : item.id, }), item.id)
             ])
