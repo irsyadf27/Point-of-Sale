@@ -35,28 +35,12 @@ class StockDeleteView(DeleteView):
         return self.post(request, *args, **kwargs)
 
 class StockListJson(BaseDatatableView):
-    # The model we're going to show
     model = ProductWarehouse
-
-    # define the columns that will be returned
     columns = ['warehouse', 'product', 'stock']
-
-    # define column names that will be used in sorting
-    # order is important and should be same as order of columns
-    # displayed by datatables. For non sortable columns use empty
-    # value like ''
     order_columns = ['warehouse', 'product', 'stock']
-
-    # set max limit of records returned, this is used to protect our site if someone tries to attack our site
-    # and make it return huge amount of data
     max_display_length = 500
 
-    #def render_column(self, row, column):
-    #    return super(StockListJson, self).render_column(row, column)
-
     def prepare_results(self, qs):
-        # prepare list with output column data
-        # queryset is already paginated here
         json_data = []
         for item in qs:
             json_data.append([

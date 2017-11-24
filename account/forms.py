@@ -4,16 +4,14 @@ from django.contrib.auth.models import User
 class AccountForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False, label="Konfirmasi Password")
+    first_name = forms.CharField(required=True, label="Nama Depan")
+    last_name = forms.CharField(required=False, label="Nama Belakang")
+    username = forms.CharField(required=True)
+    email = forms.CharField(required=True)
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'username', 'email', 'is_superuser']
-        labels = {
-            "first_name": "Nama Depan",
-            "last_name": "Nama Belakang",
-            "username": "Username",
-            "email": "Email",
-        }
 
     def clean(self):
         cleaned_data = super(AccountForm, self).clean()
@@ -23,6 +21,11 @@ class AccountForm(forms.ModelForm):
         if password != confirm_password:
             raise forms.ValidationError(
                 "Password dan Konfirmasi Password tidak sama."
+            )
+
+        if User.objects.filter(email__iexact=cleaned_data.get("email")).exclude(username=cleaned_data.get("username")).exists():
+            raise forms.ValidationError(
+                "Email sudah ada yang menggunakan."
             )
 
     def save(self, commit=True):
@@ -35,17 +38,14 @@ class AccountForm(forms.ModelForm):
         return user
 
 class SettingForm(forms.ModelForm):
+    first_name = forms.CharField(required=True, label="Nama Depan")
+    email = forms.CharField(required=True)
     password = forms.CharField(widget=forms.PasswordInput(), required=False)
     confirm_password = forms.CharField(widget=forms.PasswordInput(), required=False, label="Konfirmasi Password")
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email',]
-        labels = {
-            "first_name": "Nama Depan",
-            "last_name": "Nama Belakang",
-            "email": "Email",
-        }
+        fields = ['first_name', 'last_name', 'email']
 
     def clean(self):
         cleaned_data = super(SettingForm, self).clean()
@@ -55,6 +55,11 @@ class SettingForm(forms.ModelForm):
         if password != confirm_password:
             raise forms.ValidationError(
                 "Password dan Konfirmasi Password tidak sama."
+            )
+
+        if User.objects.filter(email__iexact=cleaned_data.get("email")).exclude(username=cleaned_data.get("username")).exists():
+            raise forms.ValidationError(
+                "Email sudah ada yang menggunakan."
             )
 
     def save(self, commit=True):

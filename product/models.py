@@ -26,14 +26,15 @@ class Product(models.Model):
         choices=choice_size,
     )
     color = models.CharField(max_length=15)
-    price = models.FloatField()
+    purchase_price = models.FloatField(blank=True, default=None)
+    selling_price = models.FloatField(blank=True, default=None)
     qrcode = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     
     def __str__(self):
-        return "%s (%s) %s" % (self.name, self.size, self.color)
+        return "%s Seri %s (%s) %s" % (self.name, self.serial_number, self.size, self.color)
 
     def __unicode__(self):
-        return "%s (%s) %s" % (self.name, self.size, self.color)
+        return "%s Seri %s (%s) %s" % (self.name, self.serial_number, self.size, self.color)
 
     @property
     def generate_qrcode(self):
@@ -57,5 +58,5 @@ class ProductWarehouse(models.Model):
     product = models.ForeignKey(Product, related_name='warehouse')
     stock = models.IntegerField()
 
-    class Meta:
-        unique_together = ('warehouse', 'product')
+    #class Meta:
+    #    unique_together = ('warehouse', 'product')

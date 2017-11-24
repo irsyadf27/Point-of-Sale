@@ -1,9 +1,0 @@
-Django==1.10
-django-bootstrap-form==3.3
-django-bootstrap3==8.0.0
-django-datatables-view==1.14.0
-gunicorn==19.7.1
-olefile==0.44
-Pillow==4.3.0
-qrcode==5.3
-six==1.11.0

@@ -18,6 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^', include('dashboard.urls')),
     url(r'^accounts/', include('account.urls')),
     url(r'^dashboard/', include('dashboard.urls')),
     url(r'^merk/', include('merk.urls')),
@@ -26,4 +27,5 @@ urlpatterns = [
     url(r'^customer/', include('customer.urls')),
     url(r'^discount/', include('discount.urls')),
     url(r'^stock/', include('stock.urls')),
+    url(r'^report/', include('report.urls')),
 ]

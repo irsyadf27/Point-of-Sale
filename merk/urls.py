@@ -1,6 +1,5 @@
 from django.conf.urls import include, url
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import views as auth_views
 from merk.views import home, MerkCreateView, MerkEditView, MerkDeleteView, MerkListJson
 
 urlpatterns = [
