@@ -1,0 +1,9 @@
+                {% for g in item.product.warehouse.all %}
+                <tr>
+                    <input type="hidden" name="warehouse[{{ item.product.pk }}]" value="{{ g.warehouse.pk }}">
+                    <td>{{ g.warehouse.name }}</td>
+                    <td>{{ g.stock }}</td>
+                    <td class="grid_slider"><input type="text" class="stock-slider2-{{ item.product.pk }}-{{ g.warehouse.pk }}" data-warehouse="{{ g.warehouse.pk }}" data-pk="{{ item.product.pk }}" data-min="0" data-prev="{{ item.quantity|intdiv:item.product.warehouse.count }}" value="{{ item.quantity|intdiv:item.product.warehouse.count }}" name="range[{{ item.product.pk }}][{{ g.warehouse.pk }}]"/></td>
+                    <td><input type="number" class="form-control stock-input-{{ item.product.pk }}-{{ g.warehouse.pk }}" value="{{ item.quantity|intdiv:item.product.warehouse.count }}"></td>
+                </tr>
+                {% endfor %}

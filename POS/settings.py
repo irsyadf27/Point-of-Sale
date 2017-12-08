@@ -23,10 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '332nnu5i4==wylw&*447gwd=$mx^c8=mfw14rey=*ov8otoor7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CART_PRODUCT_MODEL = 'product.models.Product'
 
 # Application definition
 
@@ -38,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'mathfilters',
+    'carton',
     'bootstrap3',
     'bootstrapform',
     
@@ -50,6 +53,7 @@ INSTALLED_APPS = [
     'warehouse',
     'stock',
     'report',
+    'received_product',
 ]
 
 MIDDLEWARE = [
@@ -123,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 

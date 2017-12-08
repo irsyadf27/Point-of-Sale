@@ -1,13 +1,13 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.views.generic import ListView, DeleteView, CreateView, UpdateView, DetailView
 from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from product.models import Product, ProductWarehouse
-from product.forms import ProductForm, IncomeProductForm
+from product.forms import ProductForm
+from warehouse.models import Warehouse
 import json
 
 # Create your views here.
@@ -36,12 +36,6 @@ def qrcode(request, pk):
     nama = "%s (%s) %s" % (data.name, data.size, data.color)
     return HttpResponse('<img src="data:image/png;base64,%s" class="download-qrcode"/><div class="clearfix"></div><div class="ln_solid"></div><div class="text-center"><a href="data:image/png;base64,%s" download="%s.png" class="btn btn-sm btn-primary"><i class="fa fa-download"></i> Download</a>' % (data.generate_qrcode, data.generate_qrcode, nama))
 
-class IncomeProductView(CreateView):
-    form_class = IncomeProductForm
-    model = ProductWarehouse
-    success_url = reverse_lazy('income_product')
-    template_name = 'product/income.html'
-
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'product/detail.html'
@@ -67,6 +61,13 @@ class ProductDeleteView(DeleteView):
     success_url = reverse_lazy('product')
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
+
+class ModalProductCreateView(CreateView):
+    #form_class = ProductForm
+    model = Product
+    success_url = reverse_lazy('receiving_product')
+    template_name = 'product/modal/create.html'
+    fields = ['name', 'merk', 'serial_number', 'size', 'color', 'cost_price', 'selling_price']
 
 class ProductListJson(BaseDatatableView):
     model = Product

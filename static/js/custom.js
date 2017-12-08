@@ -1,4 +1,9 @@
 $(document).ready(function() {
+    var is_update = false;
+    var can_update_slide = true;
+    //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+    load_table_keranjang_penerimaan();
+    $("#total-harga-diterima").load(BASE_URL + 'product/receive/cart_total/');
     $('#daftar-merk').dataTable({
         "processing": true,
         "serverSide": true,
@@ -73,9 +78,24 @@ $(document).ready(function() {
     });
     $(".js-example-matcher-start").change(function() {
         if($(this).val()) {
-            $('#btn-mapping-gudang').removeClass('disabled');
+            //$('#btn-mapping-gudang').removeClass('disabled');
+            $.ajax({
+                url: BASE_URL + 'product/receive/add/' + $(this).val(),
+                cache: false,
+                success: function(html){
+                    /*$.get(BASE_URL + 'product/show_cart/', function(html) {
+                        $("#keranjang-diterima").html(html);
+                    });*/
+                    //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+                    //$("#total-harga-diterima").load(BASE_URL + 'product/cart_total/');
+                    load_table_keranjang_penerimaan();
+                    $(".js-example-matcher-start").val(null).trigger("change"); 
+                    //$('.txt-qty').editable();
+                }
+            });
+
         } else {
-            $('#btn-mapping-gudang').addClass('disabled');
+            //$('#btn-mapping-gudang').addClass('disabled');
         }
     });
     $('#btn-mapping-gudang').click(function() {
@@ -91,7 +111,263 @@ $(document).ready(function() {
             });
         }
     });
+
+    $('#btn-tambah-produk').click(function() {
+        $.ajax({
+            url: BASE_URL + 'product/modal_create/',
+            cache: false,
+            success: function(html){
+                $("#body-tambah-produk").html(html);
+                $('#modal-tambah-produk').modal('show');
+            }
+        });
+    });
+    $('#mapping-gudang').on('click', 'button[id^=show-mapping-]', function() {
+        var elem_tr = $("#tr-mapping-" + $(this).attr('id').substr(13));
+        if(elem_tr.is(':visible')) {
+            $("#mapping-" + $(this).attr('id').substr(13)).slideToggle("slow");
+            $("#show-mapping-" + $(this).attr('id').substr(13)).html('<i class="fa fa-chevron-up"></i> Gudang');
+            elem_tr.hide();
+        } else {
+            elem_tr.show();
+            $("#mapping-" + $(this).attr('id').substr(13)).slideToggle("slow");
+            $("#show-mapping-" + $(this).attr('id').substr(13)).html('<i class="fa fa-chevron-down"></i> Gudang');
+        }
+        event.preventDefault();
+    });
+
+    $('#mapping-gudang').on('keyup keypress blur change', 'input[class*="stock-slider2-"]', function(event) {
+        if(can_update_slide) {
+            var pk = $(this).data('pk');
+            var sisa = parseInt($('.sisa-' + pk).text());
+            var prev = parseInt($(this).data('prev'));
+            var patt = /stock-slider2-([0-9+])-([0-9+])/i;
+            var a = $(this).attr('class').match(patt);
+            if((sisa - ($(this).val() - prev) >= 0) && ($(this).val() != prev)) {
+                $('.sisa-' + $(this).data('pk')).text(sisa - ($(this).val() - prev));
+                $('#txt-sisa-' + pk).val(sisa - ($(this).val() - prev));
+                $(this).val($(this).val());
+                $(this).data('prev', $(this).val());
+                $('.stock-input-' + pk + '-' + a[2]).val($(this).val());
+                is_update = true;
+                can_update_slide = false;
+                $('input[class*="stock-slider2-' + pk + '-"]').each(function(i, el){
+                    update_slider($(el), parseInt($(el).data('prev'))+parseInt($('.sisa-' + pk).text()));
+                });
+                //update_slider(el, prev+sisa);
+            } else {
+                $(this).val(prev);
+                $('.stock-input-' + pk + '-' + a[2]).val(prev);
+                is_update = true;
+                can_update_slide = false;
+                update_slider($(this), prev);
+            }
+        }
+    });
+
+    $('#mapping-gudang').on('change keyup', 'input[class*="stock-input-"]', function(event) {
+        var patt = /stock-input-([0-9+])-([0-9+])/i;
+        var a = $(this).attr('class').match(patt);
+        var $elem = $('.stock-slider2-' + a[1] + '-' + a[2]);
+        var pk = $elem.data('pk');
+        var sisa = parseInt($('.sisa-' + pk).text());
+        var prev = parseInt($elem.data('prev'));
+        var slider = $elem.data("ionRangeSlider");
+        if((sisa - ($(this).val() - prev) >= 0) && ($(this).val != prev)) {
+            slider.update({
+                from: $(this).val()
+            });
+        } else {
+            $(this).val(prev);
+        }
+    });
+
+    function update_slider(elem, max) {
+        if(is_update) {
+            var slider = elem.data("ionRangeSlider");
+            slider.update({
+                max: max
+            });
+            is_update = false;
+            can_update_slide = true;
+        }
+    }
+
+    $('#mapping-gudang').editable({
+        selector: '.txt-qty',
+        success: function(response, newValue) {
+            /*$('#txt-subtotal-' + response.pk).text(response.price);
+            $('.sisa-' + response.pk).text(response.qty);
+            var sum = 0;
+
+            $('#keranjang-diterima input[class*="stock-slider2-' + response.pk + '-"]').each(function(i, el){
+                var patt = /stock-slider2-([0-9+])-/i;
+
+                
+                var spl = el.className.split(' ');
+                for(var i=0;i < spl.length; i++) {
+                    if(spl[i].match(patt)) {
+                        sum = sum + parseInt($('.' + spl[i]).data('prev'));
+                    }
+                }
+            });
+            $('.sisa-' + response.pk).text(response.qty - sum);*/
+            //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+            //$("#total-harga-diterima").load(BASE_URL + 'product/cart_total/');
+            load_table_keranjang_penerimaan();
+        }
+    });
+
+    $('#mapping-gudang').on('click', '.tambah-gudang-penerimaan', function() {
+        $('#select-tambah-gudang').html('');
+        $('#modal-tambah-gudang').modal('show');
+        $('#text-tambah-gudang').text('Menambah Gudang untuk Produk ' + $(this).data('namaproduk'));
+        var produk_id = $(this).data('produk');
+        $('#form-tambah-gudang').append('<select class="form-control" id="select-tambah-gudang" name="warehouse[' + produk_id + ']"></select>');
+        $.ajax({
+            url: BASE_URL + 'warehouse/list_warehouse/' + produk_id + '/',
+            cache: false,
+            success: function(res){
+                $.each(res.results, function(key, value) {
+                    $('#select-tambah-gudang')
+                        .append($("<option></option>")
+                            .attr("value", value.id)
+                            .text(value.text)); 
+                });
+
+            }
+        });
+    });
+
+    $('#save-tambah-gudang').click(function() {
+        swal({
+            title: 'Konfirmasi',
+            text: "Apa anda yakin akan menambah gudang untuk produk ini?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancel'
+        }).then(function () {
+            var data = $("form#form-keranjang-penerimaan").serialize() + '&' + $("form#form-tambah-gudang").serialize() + '&range[1][' + $('#select-tambah-gudang').val() + ']=0';
+            $.ajax({
+                type: "POST",
+                url: BASE_URL + 'product/receive/testpost/',
+                data: data,
+                cache: false,
+                success: function(res){
+                    $.ajax({
+                        url: BASE_URL + 'product/receive/show_cart/',
+                        cache: false,
+                        success: function(res){
+                            $("#mapping-gudang").html($(res));
+                            init_slider();
+                        }
+                    });
+                    $("#total-harga-diterima").load(BASE_URL + 'product/receive/cart_total/');
+                }
+            });
+        });
+    });
+
+    $('.submit-keranjang-penerimaan').click(function() {
+        var punya_sisa = false;
+        var elem = '';
+        var sum = 0;
+        $('#mapping-gudang span[class*="sisa"]').each(function(i, el){
+            elem = $(el);
+            sum = sum + parseInt(elem.text());
+        });
+        if(parseInt(elem.text()) > 0) {
+            swal(
+              'Oops...',
+              'Masih ada produk yang mempunyai sisa stok',
+              'error'
+            );
+        } else {
+            swal({
+                title: 'Konfirmasi',
+                text: "Apa anda yakin akan menerima semua barang ini?",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ok',
+                cancelButtonText: 'Cancel'
+            }).then(function () {
+                var data = $("form#form-keranjang-penerimaan").serialize() + '&' + $("form#form-tambah-gudang").serialize() + '&range[1][' + $('#select-tambah-gudang').val() + ']=0';
+                $.ajax({
+                    type: "POST",
+                    url: BASE_URL + 'product/receive/checkout/',
+                    data: data,
+                    cache: false,
+                    success: function(res){
+                        swal(
+                          'Success',
+                          'Berhasil menerima produk!',
+                          'success'
+                        )
+                        $.ajax({
+                            url: BASE_URL + 'product/receive/show_cart/',
+                            cache: false,
+                            success: function(res){
+                                $("#mapping-gudang").html($(res));
+                                init_slider();
+                            }
+                        });
+                        $("#total-harga-diterima").load(BASE_URL + 'product/receive/cart_total/');
+                    }
+                });
+            });
+        }
+    });
+
+    (function() {
+        var original = $.fn.editableutils.setCursorPosition;
+        $.fn.editableutils.setCursorPosition = function() {
+            try {
+                original.apply(this, Array.prototype.slice.call(arguments));
+            } catch (e) { /* noop */ }
+        };
+    })();
 });
+function init_slider() { 
+    $('#mapping-gudang input[class*="stock-slider2-"]').each(function(i, el){
+        var prev = parseInt($(this).data('prev'));
+        var patt = /stock-slider2-([0-9+])-/i;
+        var a = $(this).attr('class').match(patt);
+        var pk = a[1]
+        var sisa = parseInt($('.sisa-' + pk).text());
+
+        $('.' + el.className).ionRangeSlider({
+            min:0,
+            max: prev+sisa
+        });
+    });
+}
+function load_table_keranjang_penerimaan() {
+    $.ajax({
+        type: "POST",
+        url: BASE_URL + 'product/receive/testpost/',
+        data: $("form#form-keranjang-penerimaan").serialize(),
+        cache: false,
+        success: function(res){
+            $.ajax({
+                url: BASE_URL + 'product/receive/show_cart/',
+                cache: false,
+                success: function(res){
+                    $("#mapping-gudang").html($(res));
+                    init_slider();
+                }
+            });
+            //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+            $("#total-harga-diterima").load(BASE_URL + 'product/receive/cart_total/');
+            //init_slider();
+        }
+    });
+    //("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+}
 function hapus_merk(id) {
     swal({
         title: 'Konfirmasi',
@@ -188,6 +464,28 @@ function hapus_pengguna(id) {
         cancelButtonText: 'Cancel'
     }).then(function () {
         window.location.href = BASE_URL + 'accounts/delete/' + id;
+    })
+}
+function hapus_cart_penerimaan(id) {
+    swal({
+        title: 'Konfirmasi',
+        text: "Apa anda yakin ingin menghapus item ini?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok',
+        cancelButtonText: 'Cancel'
+    }).then(function () {
+        $.ajax({
+            url: BASE_URL + 'product/receive/remove_cart/' + id,
+            cache: false,
+            success: function(html){
+                //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+                //$("#total-harga-diterima").load(BASE_URL + 'product/cart_total/');
+                load_table_keranjang_penerimaan();
+            }
+        });
     })
 }
 function get_qrcode(id) {

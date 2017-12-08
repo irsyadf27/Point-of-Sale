@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.contrib.auth.decorators import login_required
 from warehouse.views import home, WarehouseDetailView, WarehouseCreateView, \
     WarehouseEditView, WarehouseDeleteView, WarehouseListJson, \
-    WarehouseProductListJson
+    WarehouseProductListJson, list_warehouse
 
 urlpatterns = [
     url(r'^$', home, name='warehouse'),
@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^delete/(?P<pk>[0-9]+)$', WarehouseDeleteView.as_view(), name='delete_warehouse'),
     url(r'^data/$', login_required(WarehouseListJson.as_view()), name='warehouse_list_json'),
     url(r'^product/(?P<pk>[0-9]+)/$', login_required(WarehouseProductListJson.as_view()), name='warehouse_product_list_json'),
+    url(r'^list_warehouse/(?P<pk>[0-9]+)/$', list_warehouse, name='list_warehouse'),
 ]

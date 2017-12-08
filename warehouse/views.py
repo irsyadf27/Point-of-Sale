@@ -1,13 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.views.generic import ListView, DeleteView, CreateView, UpdateView, DetailView
 from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from warehouse.models import Warehouse
 from warehouse.forms import WarehouseForm
-from product.models import ProductWarehouse
+from product.models import ProductWarehouse, Product
+import json
 
 # Create your views here.
 @login_required
@@ -89,3 +91,17 @@ class WarehouseProductListJson(BaseDatatableView):
             qs = qs.filter(product__name__contains=search)
 
         return qs
+
+@login_required
+def list_warehouse(request, pk):
+    result = []
+    if 'keranjang-penerimaan' in request.session and bool(request.session['keranjang-penerimaan']):
+        list_warehouse = [i[0] for i in request.session['keranjang-penerimaan'][str(pk)]['warehouse']]
+    else:
+        product = Product.objects.get(pk=pk)
+        list_warehouse = [i.warehouse.pk for i in ProductWarehouse.objects.filter(product=product)]
+    qs = Warehouse.objects.exclude(pk__in=list_warehouse)
+    for data in qs:
+        result.append({'id': data.pk, 'text': str(data)})
+    result = json.dumps({'results': result})
+    return HttpResponse(result, content_type='application/json')

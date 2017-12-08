@@ -1,0 +1,52 @@
+{% load carton_tags %}
+{% load mathfilters %}
+{% load product_tags %}
+{% load staticfiles %}
+{% get_cart 'CART-RECEIVE-PRODUCT' as cart %}
+  <form action="{% url 'testpost' %}" method="post" id="form-keranjang-penerimaan">
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Nama Produk</th>
+      <th>Harga Beli</th>
+      <th>Stok (+qty)</th>
+      <th>Subtotal</th>
+      <th><button type="button" onclick="javascript: load_table_keranjang_penerimaan();" class="btn btn-sm btn-warning pull-right"><i class="fa fa-refresh"></i> Save/Refresh</button></th>
+    </tr>
+  </thead>
+  <tbody id="keranjang-diterima">
+{% csrf_token %}
+{% for item in cart.items %}
+<div class="clearfix"></div>
+<tr>
+    <td>{{ item.product.name }}</td>
+    <td>{{ item.product.cost_price }}</td>
+    <td>{{ item.product.stock }} (<a href="#" class="txt-qty text-info editable-click" data-type="number" data-qty="{{ item.quantity }}" data-pk="{{ item.product.pk }}" data-url="{% url 'set_qty_product' item.product.pk %}" data-title="Masukan Kuantitas" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ item.quantity }}</a>)</td>
+    <td id="txt-subtotal-{{ item.product.pk }}">{{ item.subtotal }}</td>
+    <td style="width: 200px">
+        <button type="button" class="btn btn-sm btn-primary" id="show-mapping-{{ item.product.pk }}"><i class="fa fa-chevron-up"></i> Gudang</button>
+        <a type="#" class="btn btn-sm btn-danger" onclick="javascript:hapus_cart_penerimaan({{ item.product.pk }})"><i class="fa fa-trash"></i> Hapus</a>
+    </td>
+</tr>
+<tr id="tr-mapping-{{ item.product.pk }}">
+    <div class="clearfix"></div>
+    <td colspan="5">
+        <div id="mapping-{{ item.product.pk }}">
+            <table class="table table-bordered">
+                <tr>
+                    <th style="width: 300px">Gudang</th>
+                    <th style="width: 300px">Stok Sekarang</th>
+                    <th>Sisa: <span class="sisa-{{ item.product.pk }}" data-produk="{{ item.product.name }}">{% remain_stock item.product.pk item.quantity %}</span></th>
+                    <input type="hidden" name="sisa[{{ item.product.pk }}]" id="txt-sisa-{{ item.product.pk }}" value="{% remain_stock item.product.pk item.quantity %}">
+                    <th style="width: 80px"><button type="button" class="btn btn-sm btn-default tambah-gudang-penerimaan" data-produk="{{ item.product.pk }}" data-namaproduk="{{ item.product.name }}"><i class="fa fa-plus"></i> Gudang</button></th>
+                    <input type="hidden" name="product" value="{{ item.product.pk }}">
+                </tr>
+                {% warehouse item.product.pk item.quantity %}
+            </table>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+    </tbody>
+</table>
+</form>

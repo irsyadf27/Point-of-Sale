@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.db.models import Sum
 from merk.models import Merk
 from warehouse.models import Warehouse
 import qrcode
@@ -37,6 +38,10 @@ class Product(models.Model):
         return "%s Seri %s (%s) %s" % (self.name, self.serial_number, self.size, self.color)
 
     @property
+    def stock(self):
+        return ProductWarehouse.objects.filter(product=self).aggregate(Sum('stock'))['stock__sum']
+        
+    @property
     def generate_qrcode(self):
         qr = qrcode.QRCode(
             version=1,
@@ -60,3 +65,9 @@ class ProductWarehouse(models.Model):
 
     #class Meta:
     #    unique_together = ('warehouse', 'product')
+
+    def __str__(self):
+        return "%s - %s (%s)" % (self.warehouse.name, self.product.name, self.stock)
+
+    def __unicode__(self):
+        return "%s - %s (%s)" % (self.warehouse.name, self.product.name, self.stock)
