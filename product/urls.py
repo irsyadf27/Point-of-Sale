@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^list_json/$', list_json, name='product_json'),
 
     url(r'^receive/', include('received_product.urls')),
+    url(r'^return/', include('returned_product.urls')),
 ]

@@ -1,8 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from django.views.generic import ListView, DeleteView, CreateView, UpdateView, DetailView
-from django.views.generic import View
+from django.views.generic import CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.decorators.csrf import csrf_exempt

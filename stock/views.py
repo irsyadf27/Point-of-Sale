@@ -47,7 +47,7 @@ class StockListJson(BaseDatatableView):
                 item.warehouse.name,
                 "%s (%s) %s" % (item.product.name, item.product.size, item.product.color),
                 item.stock,
-                "<a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_stok(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_stock', kwargs = {'pk' : item.id, }), item.id)
+                "<!-- <a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> --><a href='#' onclick='javascript: hapus_stok(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_stock', kwargs = {'pk' : item.id, }), item.id)
             ])
         return json_data
 

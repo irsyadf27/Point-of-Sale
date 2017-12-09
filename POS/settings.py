@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'stock',
     'report',
     'received_product',
+    'returned_product',
 ]
 
 MIDDLEWARE = [

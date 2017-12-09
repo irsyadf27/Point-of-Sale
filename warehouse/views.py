@@ -95,7 +95,7 @@ class WarehouseProductListJson(BaseDatatableView):
 @login_required
 def list_warehouse(request, pk):
     result = []
-    if 'keranjang-penerimaan' in request.session and bool(request.session['keranjang-penerimaan']):
+    if 'keranjang-penerimaan' in request.session and bool(request.session['keranjang-penerimaan']) and str(pk) in request.session['keranjang-penerimaan']:
         list_warehouse = [i[0] for i in request.session['keranjang-penerimaan'][str(pk)]['warehouse']]
     else:
         product = Product.objects.get(pk=pk)
