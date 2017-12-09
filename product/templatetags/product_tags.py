@@ -140,3 +140,29 @@ def remain_stock_returned(context, product_id, qty_product):
         total = int(qty_product)
 
     return qty_product - total
+
+@register.simple_tag(takes_context=True)
+def cart_total_returnded(context):
+    request = context['request']
+    total = 0
+    '''if 'keranjang-pengembalian' in request.session and bool(request.session['keranjang-pengembalian']):
+        if str(product_id) in request.session['keranjang-pengembalian']:
+            rng = sum(int(x[1]) for x in request.session['keranjang-pengembalian'][str(product_id)]['warehouse'])
+            cnt = len(request.session['keranjang-pengembalian'][str(product_id)]['warehouse'])
+        else:
+            rng = 0
+            cnt = 0
+        if str(product_id) in request.session['keranjang-pengembalian']:
+            for i in request.session['keranjang-pengembalian'][str(product_id)]['warehouse']:
+                if qty_product < rng:
+                    i[1] = qty_product
+                total = total + int(i[1])
+    {u'2': {u'warehouse': [[u'2', u'2'], [u'1', u'0'], [u'4', u'0']], u'range': [u'2', u'0', u'0'], u'remain': u'0'}}
+    '''
+    print request.session['keranjang-pengembalian']
+    for i in request.session['keranjang-pengembalian']:
+        product = Product.objects.get(pk=i)
+        for x in request.session['keranjang-pengembalian'][i]['range']:
+            total = total + (product.cost_price * float(x))
+
+    return "Rp. %s" % total
