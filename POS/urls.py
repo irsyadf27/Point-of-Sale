@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'^discount/', include('discount.urls')),
     url(r'^stock/', include('stock.urls')),
     url(r'^report/', include('report.urls')),
+    url(r'^cashier/', include('cashier.urls')),
 ]

@@ -654,3 +654,11 @@ function matchStart(params, data) {
   // Return `null` if the term should not be displayed
   return null;
 }
+function loading() {
+  return '<div class="text-center"><img src="' + BASE_URL + 'static/images/loading.gif"/></div>';
+}
+function beep() {
+    var snd = new Audio(BASE_URL + 'static/Beep2.ogg');
+    snd.volume = 1.0;
+    snd.play();
+}

@@ -55,6 +55,9 @@ INSTALLED_APPS = [
     'report',
     'received_product',
     'returned_product',
+    'cashier',
+
+    'sslserver',
 ]
 
 MIDDLEWARE = [
