@@ -218,7 +218,19 @@ $(document).ready(function() {
             $('.sisa-' + response.pk).text(response.qty - sum);*/
             //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
             //$("#total-harga-diterima").load(BASE_URL + 'product/cart_total/');
-            load_table_keranjang_penerimaan();
+            //load_table_keranjang_penerimaan();
+            
+            $.ajax({
+                url: BASE_URL + 'product/receive/show_cart/',
+                cache: false,
+                success: function(res){
+                    $("#mapping-gudang").html($(res));
+                    init_slider();
+                }
+            });
+            //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+            $("#total-harga-diterima").load(BASE_URL + 'product/receive/cart_total/');
+            //init_slider();
         }
     });
 
