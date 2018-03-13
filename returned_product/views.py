@@ -16,7 +16,7 @@ import json
 class ReturnedProductView(CreateView):
     form_class = ReturnedProductForm
     model = ProductWarehouse
-    success_url = reverse_lazy('returned_product')
+    success_url = reverse_lazy('returned:returned_product')
     template_name = 'returned_product/return.html'
 
 @login_required
@@ -31,6 +31,7 @@ def add(request, pk):
 def remove_cart(request, pk):
     cart = Cart(request.session, session_key='CART-RETURN-PRODUCT')
     product = Product.objects.get(id=pk)
+    del request.session['keranjang-pengembalian'][pk]
     cart.remove(product)
     return HttpResponse("Removed")
 
@@ -44,6 +45,7 @@ def set_qty(request, pk):
 
 @login_required
 def show_cart(request):
+    print request.session['keranjang-pengembalian']
     return render(request, 'returned_product/return/table.html')
 
 @login_required
@@ -97,7 +99,7 @@ def checkout(request):
                     subtotal=obj_product.cost_price * float(z[1])
                     )
                 returned_detail.save()
-                obj_warehouse.stock = obj_warehouse.stock - int(z[1])
+                obj_warehouse.stock = int(z[1])
                 obj_warehouse.save()
     cart.clear()
     return HttpResponse("Success")

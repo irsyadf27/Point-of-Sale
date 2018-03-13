@@ -9,7 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from carton.cart import Cart
 import json
 from cashier.forms import CashierForm
-from product.models import Product
+from product.models import Product, ProductWarehouse
+from warehouse.models import Warehouse
 
 # Create your views here.
 @login_required
@@ -17,6 +18,10 @@ def home(request):
     form = CashierForm()
     return render(request, 'cashier/cashier.html', {'form': form})
 
+
+@login_required
+def mapping(request):
+    return render(request, 'cashier/mapping-gudang.html')
 
 @login_required
 @csrf_exempt
@@ -36,6 +41,7 @@ def add(request):
 def remove_cart(request, pk):
     cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
     product = Product.objects.get(id=pk)
+    del request.session['keranjang-pengembalian'][pk]
     cart.remove(product)
     return HttpResponse("Removed")
 
@@ -54,3 +60,37 @@ def show_cart(request):
 @login_required
 def cart_total(request):
     return render(request, 'returned_product/return/total.html')
+
+@login_required
+@csrf_exempt
+def testpost(request):
+    product = request.POST.getlist('product')
+    arr = {}
+    if product:
+        for i in product:
+            warehouse = request.POST.getlist('warehouse[%s]' % i)
+            remain = request.POST.get('sisa[%s]' % i)
+            list_range = []
+            for x in warehouse:
+                list_range.append(request.POST.get('range[%s][%s]' % (i, x)))
+            list_warehouse = zip(warehouse, list_range)
+            arr[i] = {'warehouse': list_warehouse, 'range': list_range, 'remain': remain}
+        request.session['keranjang-cashier'] = arr
+    return HttpResponse(arr)
+
+
+@login_required
+@csrf_exempt
+def checkout(request):
+    product = request.POST.getlist('produk')
+    for i in product:
+        gudang = request.POST.getlist('gudang[' + str(i) + ']')
+        for g in gudang:
+            gdg = g.split('-')
+            obj_wh = Warehouse.objects.get(pk=gdg[0])
+            obj_product = Product.objects.get(pk=i)
+            obj_warehouse = ProductWarehouse.objects.get(product=obj_product, warehouse=obj_wh)
+            obj_warehouse.stock = obj_warehouse.stock - int(gdg[1])
+            obj_warehouse.save()
+            del request.session['keranjang-cashier']
+    return HttpResponse("Success")

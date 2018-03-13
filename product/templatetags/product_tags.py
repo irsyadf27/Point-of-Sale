@@ -3,6 +3,8 @@ from warehouse.models import Warehouse
 from product.models import Product, ProductWarehouse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
+from django.db.models import Sum
+
 register = template.Library()
 
 @register.simple_tag(takes_context=True)
@@ -68,7 +70,10 @@ def remain_stock(context, product_id, qty_product):
         product = Product.objects.get(pk=product_id)
         product_warehouse = ProductWarehouse.objects.filter(product=product)
         cnt = product_warehouse.count()
-        total = (int(qty_product)/int(cnt)) * cnt
+        if cnt == 0:
+            total = 0
+        else:
+            total = (int(qty_product)/int(cnt)) * cnt
 
     return qty_product - total
 
@@ -166,3 +171,31 @@ def cart_total_returnded(context):
             total = total + (product.cost_price * float(x))
 
     return "Rp. %s" % total
+
+@register.simple_tag(takes_context=True)
+def mapping_cashier(context, product_id, qty):
+    product = Product.objects.get(pk=product_id)
+    product_warehouse = ProductWarehouse.objects.filter(product=product)
+    cnt = product_warehouse.aggregate(Sum('stock')).get('stock__sum', 0)
+    print cnt
+    if qty > cnt:
+        return mark_safe("<tr><td colspan=\"5\" class=\"text-center\">Stok Tidak Tersedia</td></tr>")
+    else:
+        daftar_gudang = product_warehouse.order_by('-stock')
+        total = 0
+        sisa = qty
+        ret = ""
+        i = 0
+        while sisa > 0 and i <= len(daftar_gudang):
+            gudang = daftar_gudang[i]
+
+
+            if gudang.stock >= sisa:
+                ret += "<tr><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><td></td><td>%s</td><td>%s</td><td></td><tr>" % (product_id, gudang.warehouse.pk, sisa, gudang.warehouse.name, sisa)
+                sisa = 0
+            elif gudang.stock < sisa:
+                ret += "<tr><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><td></td><td>%s</td><td>%s</td><td></td><tr>" % (product_id, gudang.warehouse.pk, gudang.stock, gudang.warehouse.name, gudang.stock)
+                sisa -= gudang.stock
+
+            i += 1
+    return mark_safe(ret)

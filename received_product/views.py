@@ -15,7 +15,7 @@ import json
 class ReceiveProductView(CreateView):
     form_class = ReceiveProductForm
     model = ProductWarehouse
-    success_url = reverse_lazy('receive_product')
+    success_url = reverse_lazy('received:receive_product')
     template_name = 'received_product/receive.html'
 
 @login_required
@@ -51,6 +51,7 @@ def add(request, pk):
 def remove_cart(request, pk):
     cart = Cart(request.session, session_key='CART-RECEIVE-PRODUCT')
     product = Product.objects.get(id=pk)
+    del request.session['keranjang-penerimaan'][pk]
     cart.remove(product)
     return HttpResponse("Removed")
 

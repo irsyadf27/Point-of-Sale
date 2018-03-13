@@ -384,13 +384,14 @@ $(document).ready(function() {
             elem = $(el);
             sum = sum + parseInt(elem.text());
         });
-        if(parseInt(elem.text()) > 0) {
+        /*if(parseInt(elem.text()) > 0) {
             swal(
               'Oops...',
               'Masih ada produk yang mempunyai sisa stok',
               'error'
             );
         } else {
+        */
             swal({
                 title: 'Konfirmasi',
                 text: "Apa anda yakin akan mengembalikan semua barang ini?",
@@ -425,7 +426,7 @@ $(document).ready(function() {
                     }
                 });
             });
-        }
+        //}
     });
 });
 function init_slider() { 

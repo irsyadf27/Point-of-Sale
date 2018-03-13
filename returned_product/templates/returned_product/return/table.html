@@ -3,7 +3,7 @@
 {% load product_tags %}
 {% load staticfiles %}
 {% get_cart 'CART-RETURN-PRODUCT' as cart %}
-  <form action="{% url 'testpost' %}" method="post" id="form-keranjang-pengembalian">
+  <form action="{% url 'returned:testpost' %}" method="post" id="form-keranjang-pengembalian">
 <table class="table table-hover">
   <thead>
     <tr>

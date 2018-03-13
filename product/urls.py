@@ -18,6 +18,6 @@ urlpatterns = [
     url(r'^mapping/(?P<pk>[0-9]+)/$', login_required(MappingListJson.as_view()), name='mapping_product_list_json'),
     url(r'^list_json/$', list_json, name='product_json'),
 
-    url(r'^receive/', include('received_product.urls')),
-    url(r'^return/', include('returned_product.urls')),
+    url(r'^receive/', include('received_product.urls', namespace='received')),
+    url(r'^return/', include('returned_product.urls', namespace='returned')),
 ]
