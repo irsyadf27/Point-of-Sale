@@ -239,7 +239,7 @@ $(document).ready(function() {
         $('#modal-tambah-gudang').modal('show');
         $('#text-tambah-gudang').text('Menambah Gudang untuk Produk ' + $(this).data('namaproduk'));
         var produk_id = $(this).data('produk');
-        $('#form-tambah-gudang').append('<select class="form-control" id="select-tambah-gudang" name="warehouse[' + produk_id + ']"></select>');
+        $('#form-tambah-gudang').html('<select class="form-control" id="select-tambah-gudang" name="warehouse[' + produk_id + ']"></select>');
         $.ajax({
             url: BASE_URL + 'warehouse/list_warehouse/' + produk_id + '/',
             cache: false,

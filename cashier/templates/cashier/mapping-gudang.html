@@ -36,7 +36,7 @@
       <th>Harga</th>
       <th>QTY</th>
       <th>Subtotal</th>
-      <th></th>
+      <th>Gudang</th>
     </tr>
   </thead>
   <tbody id="keranjang-diterima">
@@ -44,16 +44,13 @@
 {% for item in cart.items %}
 <div class="clearfix"></div>
 <tr>
-    <td>{{ item.product.name }}</td>
-    <td>{{ item.price }}</td>
-    <td><a href="#" class="txt-qty text-info editable-click" data-type="number" data-qty="{{ item.quantity }}" data-pk="{{ item.product.pk }}" data-url="{% url 'set_qty_cashier' item.product.pk %}" data-title="Masukan Kuantitas" data-params="{csrfmiddlewaretoken:'{{csrf_token}}'}">{{ item.quantity }}</a></td>
-    <td>{{ item.subtotal }}</td>
-    <td style="width: 20px">
-        <a type="#" class="btn btn-sm btn-danger" onclick="javascript:hapus_cart_kasir({{ item.product.pk }})"><i class="fa fa-trash"></i></a>
-    </td>
+    <td style="vertical-align:middle;">{{ item.product.name }}</td>
+    <td style="vertical-align:middle;">{{ item.price }}</td>
+    <td style="vertical-align:middle;">{{ item.quantity }}</td>
+    <td style="vertical-align:middle;">{{ item.subtotal }}</td>
+    <td style="vertical-align:middle;">{% mapping_cashier item.product.pk item.quantity %}</td>
 </tr>
 <input type="hidden" name="produk" value="{{ item.product.pk }}">
-{% mapping_cashier item.product.pk item.quantity %}
 {% endfor %}
     </tbody>
     <tfoot>

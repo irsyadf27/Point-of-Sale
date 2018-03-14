@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}Kasir{% endblock %}
+{% block content %}
+{% load bootstrap %}
+        <div class="right_col" role="main">
+          <div class="">
+            <div class="page-title">
+              <div class="title_left">
+                <h3>Invoice</h3>
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Invoice<small>#{{ invoice.invoice_number }}</small></h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+
+                    <section class="content invoice">
+                      <!-- title row -->
+                      <div class="row">
+                        <div class="col-xs-12 invoice-header">
+                          <h1>
+                            <small class="pull-right">{{ invoice.created_at|date:"D, d M Y H:i" }}</small><br/>
+                          </h1>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+
+                      <!-- Table row -->
+                      <div class="row">
+                        <div class="col-xs-12 table">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>Produk</th>
+                                <th>Harga</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for produk in invoice.details.all %}
+                              <tr>
+                                <td>{{ produk.product_warehouse.product.name }}</td>
+                                <td>Rp. {{ produk.price }}</td>
+                                <td>{{ produk.qty }}</td>
+                                <td>Rp. {{ produk.subtotal }}</td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+
+                      <div class="row">
+                        <!-- /.col -->
+                        <div class="col-xs-6">
+                          <div class="table-responsive">
+                            <table class="table">
+                              <tbody>
+                                <tr>
+                                  <th>Total:</th>
+                                  <td>Rp. {{ invoice.total }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+
+
+                      <!-- this row will not appear when printing -->
+                      <div class="row no-print">
+                        <div class="col-xs-12">
+                          <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+{% endblock %}

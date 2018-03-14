@@ -179,9 +179,10 @@ def mapping_cashier(context, product_id, qty):
     cnt = product_warehouse.aggregate(Sum('stock')).get('stock__sum', 0)
     print cnt
     if qty > cnt:
-        return mark_safe("<tr><td colspan=\"5\" class=\"text-center\">Stok Tidak Tersedia</td></tr>")
+        #return mark_safe("<tr><td colspan=\"5\" class=\"text-center\">Stok Tidak Tersedia</td></tr>")
+        return mark_safe("<p><span class=\"label label-danger\">Stok Tidak Tersedia</span></p>")
     else:
-        daftar_gudang = product_warehouse.order_by('-stock')
+        daftar_gudang = product_warehouse.order_by('stock')
         total = 0
         sisa = qty
         ret = ""
@@ -191,11 +192,15 @@ def mapping_cashier(context, product_id, qty):
 
 
             if gudang.stock >= sisa:
-                ret += "<tr><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><td></td><td>%s</td><td>%s</td><td></td><tr>" % (product_id, gudang.warehouse.pk, sisa, gudang.warehouse.name, sisa)
+                #ret += "<tr><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><td></td><td>%s</td><td>%s</td><td></td></tr>" % (product_id, gudang.warehouse.pk, sisa, gudang.warehouse.name, sisa)
+                ret += "<p><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><span class=\"label label-info\">%s</span> - <span class=\"label label-success\">%s</span></p>" % (product_id, gudang.warehouse.pk, sisa, gudang.warehouse.name, sisa)
                 sisa = 0
             elif gudang.stock < sisa:
-                ret += "<tr><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><td></td><td>%s</td><td>%s</td><td></td><tr>" % (product_id, gudang.warehouse.pk, gudang.stock, gudang.warehouse.name, gudang.stock)
-                sisa -= gudang.stock
+                if gudang.stock > 0:
+                    #ret += "<tr><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><td></td><td>%s</td><td>%s</td><td></td></tr>" % (product_id, gudang.warehouse.pk, gudang.stock, gudang.warehouse.name, gudang.stock)
+                    ret += "<p><input type=\"hidden\" name=\"gudang[%s]\" value=\"%s-%s\"><span class=\"label label-info\">%s</span> - <span class=\"label label-success\">%s</span></p>" % (product_id, gudang.warehouse.pk, gudang.stock, gudang.warehouse.name, gudang.stock)
+                    sisa -= gudang.stock
 
             i += 1
+
     return mark_safe(ret)

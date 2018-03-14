@@ -11,12 +11,20 @@ import json
 from cashier.forms import CashierForm
 from product.models import Product, ProductWarehouse
 from warehouse.models import Warehouse
+from cashier.models import Invoice, InvoiceDetail
 
 # Create your views here.
 @login_required
 def home(request):
     form = CashierForm()
     return render(request, 'cashier/cashier.html', {'form': form})
+
+class InvoiceView(DetailView):
+    model = Invoice
+    template_name = 'cashier/invoice.html'
+    slug_field = 'invoice_number'
+    slug_url_kwarg = 'invoice_number'
+    query_pk_and_slug = True
 
 
 @login_required
@@ -41,7 +49,9 @@ def add(request):
 def remove_cart(request, pk):
     cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
     product = Product.objects.get(id=pk)
-    del request.session['keranjang-pengembalian'][pk]
+    if request.session.get('keranjang-cashier', None):
+        if request.session['keranjang-cashier'].get('pk', None):
+            del request.session['keranjang-cashier'][pk]
     cart.remove(product)
     return HttpResponse("Removed")
 
@@ -83,7 +93,15 @@ def testpost(request):
 @csrf_exempt
 def checkout(request):
     product = request.POST.getlist('produk')
+    cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
     for i in product:
+        invoice = Invoice(
+            cashier=request.user,
+            qty=cart.count,
+            total=cart.total,
+            )
+        invoice.save()
+
         gudang = request.POST.getlist('gudang[' + str(i) + ']')
         for g in gudang:
             gdg = g.split('-')
@@ -92,5 +110,16 @@ def checkout(request):
             obj_warehouse = ProductWarehouse.objects.get(product=obj_product, warehouse=obj_wh)
             obj_warehouse.stock = obj_warehouse.stock - int(gdg[1])
             obj_warehouse.save()
+
+            invoice_detail = InvoiceDetail(
+                invoice=invoice,
+                product_warehouse=obj_warehouse,
+                qty=int(gdg[1]),
+                price=obj_product.selling_price,
+                subtotal=obj_product.selling_price * float(int(gdg[1]))
+                )
+            invoice_detail.save()
+        if request.session.get('keranjang-cashier', None):
             del request.session['keranjang-cashier']
-    return HttpResponse("Success")
+        cart.clear()
+        return redirect(reverse_lazy('invoice_detail', kwargs={'invoice_number': invoice.invoice_number}))
