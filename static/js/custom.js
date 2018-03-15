@@ -298,6 +298,7 @@ $(document).ready(function() {
         var punya_sisa = false;
         var elem = '';
         var sum = 0;
+        console.log($("form#form-keranjang-penerimaan").serialize());
         $('#mapping-gudang span[class*="sisa"]').each(function(i, el){
             elem = $(el);
             sum = sum + parseInt(elem.text());
@@ -319,7 +320,7 @@ $(document).ready(function() {
                 confirmButtonText: 'Ok',
                 cancelButtonText: 'Cancel'
             }).then(function () {
-                var data = $("form#form-keranjang-penerimaan").serialize() + '&' + $("form#form-tambah-gudang").serialize() + '&range[1][' + $('#select-tambah-gudang').val() + ']=0';
+                var data = $("form#form-keranjang-penerimaan").serialize();
                 $.ajax({
                     type: "POST",
                     url: BASE_URL + 'product/receive/checkout/',

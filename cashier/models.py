@@ -2,12 +2,17 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models import Count
 from product.models import Product, ProductWarehouse
+from discount.models import Discount
+from customer.models import Customer
 from django.utils import timezone
 from django.contrib.auth.models import User
 
 # Create your models here.
 class Invoice(models.Model):
     invoice_number = models.CharField(max_length=128, blank=False, unique=True)
+    customer = models.OneToOneField(Customer, related_name='invoice', null=True)
+    discount = models.OneToOneField(Discount, related_name='invoice', null=True)
+    discount_size = models.FloatField(blank=True, default=None)
     qty = models.IntegerField()
     cashier = models.ForeignKey(User, related_name='invoice_by')
     created_at = models.DateTimeField(default=timezone.now)
@@ -35,5 +40,6 @@ class InvoiceDetail(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='details')
     product_warehouse = models.ForeignKey(ProductWarehouse)
     qty = models.IntegerField()
-    price = models.FloatField(blank=True, default=None)
+    selling_price = models.FloatField(blank=True, default=None)
+    cost_price = models.FloatField(blank=True, default=None)
     subtotal = models.FloatField(blank=True, default=None)

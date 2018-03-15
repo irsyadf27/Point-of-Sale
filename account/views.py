@@ -49,8 +49,8 @@ class AccountDeleteView(DeleteView):
 
 class AccountListJson(BaseDatatableView):
     model = User
-    columns = ['first_name', 'last_name', 'username', 'email', 'is_superuser']
-    order_columns = ['first_name', 'last_name', 'username', 'email', 'is_superuser']
+    columns = ['first_name', 'last_name', 'username', 'email', 'is_superuser', 'is_staff']
+    order_columns = ['first_name', 'last_name', 'username', 'email', 'is_superuser', 'is_staff']
     max_display_length = 500
 
     def prepare_results(self, qs):
@@ -62,6 +62,7 @@ class AccountListJson(BaseDatatableView):
                 item.username,
                 item.email,
                 '<span class="label label-success"><i class="fa fa-check"></i></span>' if item.is_superuser else '<span class="label label-danger"><i class="fa fa-close"></i></span>',
+                '<span class="label label-success"><i class="fa fa-check"></i></span>' if item.is_staff else '<span class="label label-danger"><i class="fa fa-close"></i></span>',
                 "<a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Ubah</a> <a href='#' onclick='javascript: hapus_pengguna(%s);' class='btn btn-sm btn-danger'><i class='fa fa-trash'></i> Hapus</a>" % (reverse('update_account', kwargs = {'pk' : item.id, }), item.id)
             ])
         return json_data

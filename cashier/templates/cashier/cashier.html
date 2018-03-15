@@ -47,6 +47,38 @@
                 </div>
               </div>
               <div class="col-md-4">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Detail</h2>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <label for="pelanggan">Pelanggan:</label>
+                    <div class="input-group">
+                      <select id="pelanggan" class="form-control js-matcher-customer">
+                        <option value="">-</option>
+                      </select>
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                      </span>
+                    </div>
+                    <label for="discount">Diskon:</label>
+                    <select id="discount" class="form-control" name="discount">
+                      <option value="">-</option>
+                      {% for diskon in discount %}
+                        {% if 'discount_pk' in request.session %}
+                          {% if diskon.pk == request.session.discount_pk %}
+                            <option value="{{ diskon.pk }}" selected>{{ diskon.name }}</option>
+                          {% else %}
+                            <option value="{{ diskon.pk }}">{{ diskon.name }}</option>
+                          {% endif %}
+                        {% else %}
+                          <option value="{{ diskon.pk }}">{{ diskon.name }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
                 <div id="app">
                   <section class="cameras">
                     <div class="x_panel">

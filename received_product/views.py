@@ -121,8 +121,9 @@ def checkout(request):
             for x in warehouse:
                 list_range.append(request.POST.get('range[%s][%s]' % (i, x)))
             list_warehouse = zip(warehouse, list_range)
+            print list_warehouse
             for z in list_warehouse:
-                obj_wh = Warehouse.objects.get(pk=z[0])
+                obj_wh = Warehouse.objects.get(pk=int(z[0]))
                 obj_warehouse, created = ProductWarehouse.objects.get_or_create(product=obj_product, warehouse=obj_wh, defaults={'stock': int(z[1])})
                 received_detail = ReceivedProductDetail(
                     received_product=received,

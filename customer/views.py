@@ -1,17 +1,33 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.views.generic import ListView, DeleteView, CreateView, UpdateView, DetailView
 from django.views.generic import View
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from customer.models import Customer
 from customer.forms import CustomerForm
+import json
 
 # Create your views here.
 @login_required
 def home(request):
     return render(request, 'customer/customer.html')
+
+@login_required
+def list_json(request):
+    result = []
+    search = request.GET.get(u'term', None)
+    if search:
+        qs = Customer.objects.filter(name__contains=search)
+    else:
+        qs = Customer.objects.all()
+
+    for data in qs:
+        result.append({'id': data.pk, 'text': data.name, 'phone': data.phone, 'address': data.address})
+
+    result = json.dumps({'results': result})
+    return HttpResponse(result, content_type='application/json')
 
 class CustomerCreateView(CreateView):
     form_class = CustomerForm

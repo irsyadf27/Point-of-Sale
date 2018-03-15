@@ -17,16 +17,19 @@ def warehouse(context, product_id, qty_product):
             cnt = len(request.session['keranjang-penerimaan'][str(product_id)]['warehouse'])
             product = Product.objects.get(pk=product_id)
             for i in request.session['keranjang-penerimaan'][str(product_id)]['warehouse']:
-                warehouse = Warehouse.objects.get(pk=i[0])
                 try:
-                    product_warehouse = ProductWarehouse.objects.get(product=product, warehouse=warehouse)
-                except ProductWarehouse.DoesNotExist:
-                    product_warehouse = lambda: None
-                    product_warehouse.stock = 0
-                    product_warehouse.pk = -1
-                if qty_product < rng:
-                    i[1] = qty_product/cnt
-                tbl_warehouse.append('<tr><input type="hidden" name="warehouse[%s]" value="%s"><td>%s</td><td>%s</td><td class="grid_slider"><input type="text" class="stock-slider2-%s-%s" data-warehouse="%s" data-pk="%s" data-min="0" data-prev="%s" value="%s" name="range[%s][%s]"/></td><td><input type="number" class="form-control stock-input-%s-%s" value="%s"></td></tr>' % (product_id, warehouse.pk, warehouse.name, product_warehouse.stock, product_id, warehouse.pk, warehouse.pk, product.pk, i[1], i[1], product.pk, warehouse.pk, product.pk, warehouse.pk, i[1]))
+                    warehouse = Warehouse.objects.get(pk=i[0])
+                    try:
+                        product_warehouse = ProductWarehouse.objects.get(product=product, warehouse=warehouse)
+                    except ProductWarehouse.DoesNotExist:
+                        product_warehouse = lambda: None
+                        product_warehouse.stock = 0
+                        product_warehouse.pk = -1
+                    if qty_product < rng:
+                        i[1] = qty_product/cnt
+                    tbl_warehouse.append('<tr><input type="hidden" name="warehouse[%s]" value="%s"><td>%s</td><td>%s</td><td class="grid_slider"><input type="text" class="stock-slider2-%s-%s" data-warehouse="%s" data-pk="%s" data-min="0" data-prev="%s" value="%s" name="range[%s][%s]"/></td><td><input type="number" class="form-control stock-input-%s-%s" value="%s"></td></tr>' % (product_id, warehouse.pk, warehouse.name, product_warehouse.stock, product_id, warehouse.pk, warehouse.pk, product.pk, i[1], i[1], product.pk, warehouse.pk, product.pk, warehouse.pk, i[1]))
+                except Warehouse.DoesNotExist:
+                    pass
         else:
             product = Product.objects.get(pk=product_id)
             product_warehouse = ProductWarehouse.objects.filter(product=product)

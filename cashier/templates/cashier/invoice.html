@@ -2,6 +2,7 @@
 {% block title %}Kasir{% endblock %}
 {% block content %}
 {% load bootstrap %}
+{% load mathfilters %}
         <div class="right_col" role="main">
           <div class="">
             <div class="page-title">
@@ -25,13 +26,24 @@
                       <!-- title row -->
                       <div class="row">
                         <div class="col-xs-12 invoice-header">
-                          <h1>
+
                             <small class="pull-right">{{ invoice.created_at|date:"D, d M Y H:i" }}</small><br/>
-                          </h1>
+
                         </div>
                         <!-- /.col -->
                       </div>
-
+                      {% if invoice.customer %}
+                      <div class="row invoice-info">
+                        <div class="col-sm-4 invoice-col">
+                          <address>
+                              <strong>{{ invoice.customer.name }}</strong>
+                              <br><i class="fa fa-phone"></i> {{ invoice.customer.phone }}
+                              <br><i class="fa fa-map-marker"></i> {{ invoice.customer.address }}
+                          </address>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      {% endif %}
                       <!-- Table row -->
                       <div class="row">
                         <div class="col-xs-12 table">
@@ -67,9 +79,24 @@
                             <table class="table">
                               <tbody>
                                 <tr>
+                                  <th>Subtotal:</th>
+                                  <td>Rp. {{ invoice.total }}</td>
+                                </tr>
+                                {% if invoice.discount %}
+                                <tr>
+                                  <th>Diskon:</th>
+                                  <td>Rp. {{ invoice.discount_size }}</td>
+                                </tr>
+                                <tr>
+                                  <th>Total:</th>
+                                  <td>Rp. {{ invoice.total|sub:invoice.discount_size }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
                                   <th>Total:</th>
                                   <td>Rp. {{ invoice.total }}</td>
                                 </tr>
+                                {% endif %}
                               </tbody>
                             </table>
                           </div>

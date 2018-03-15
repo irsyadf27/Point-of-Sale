@@ -12,12 +12,25 @@ from cashier.forms import CashierForm
 from product.models import Product, ProductWarehouse
 from warehouse.models import Warehouse
 from cashier.models import Invoice, InvoiceDetail
+from discount.models import Discount
+from customer.models import Customer
 
 # Create your views here.
 @login_required
 def home(request):
     form = CashierForm()
-    return render(request, 'cashier/cashier.html', {'form': form})
+    discount = Discount.objects.all()
+    cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
+    if request.session.get('keranjang-cashier', None):
+        del request.session['keranjang-cashier']
+    if request.session.get('discount', None):
+        del request.session['discount']
+    if request.session.get('discount_pk', None):
+        del request.session['discount_pk']
+    if request.session.get('pelanggan', None):
+        del request.session['pelanggan']
+    cart.clear()
+    return render(request, 'cashier/cashier.html', {'form': form, 'discount': discount})
 
 class InvoiceView(DetailView):
     model = Invoice
@@ -26,6 +39,23 @@ class InvoiceView(DetailView):
     slug_url_kwarg = 'invoice_number'
     query_pk_and_slug = True
 
+@login_required
+def set_pelanggan(request, pk):
+    request.session['pelanggan'] = int(pk)
+    return HttpResponse(str(pk))
+
+@login_required
+def set_discount(request, pk):
+    cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
+    discount = Discount.objects.get(pk=pk)
+    total = 0
+    if discount.discount_type == 'percent':
+        total = float(cart.total) * (float(discount.discount_value) / 100)
+    else:
+        total = float(discount.discount_value)
+    request.session['discount'] = total
+    request.session['discount_pk'] = int(pk)
+    return HttpResponse(str(total))
 
 @login_required
 def mapping(request):
@@ -94,14 +124,27 @@ def testpost(request):
 def checkout(request):
     product = request.POST.getlist('produk')
     cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
+    customer = None
+    discount = None
+    discount_size = 0
+    if request.session.get('pelanggan', None):
+        customer = Customer.objects.get(pk=request.session['pelanggan'])
+    if request.session.get('discount', None):
+        discount = Discount.objects.get(pk=request.session['discount_pk'])
+        if discount.discount_type == 'percent':
+            discount_size = float(cart.total) * (float(discount.discount_value) / 100)
+        else:
+            discount_size = float(discount.discount_value)
+    invoice = Invoice(
+        cashier=request.user,
+        qty=cart.count,
+        total=cart.total,
+        discount_size=discount_size,
+        customer=customer,
+        discount=discount
+        )
+    invoice.save()
     for i in product:
-        invoice = Invoice(
-            cashier=request.user,
-            qty=cart.count,
-            total=cart.total,
-            )
-        invoice.save()
-
         gudang = request.POST.getlist('gudang[' + str(i) + ']')
         for g in gudang:
             gdg = g.split('-')
@@ -115,11 +158,18 @@ def checkout(request):
                 invoice=invoice,
                 product_warehouse=obj_warehouse,
                 qty=int(gdg[1]),
-                price=obj_product.selling_price,
+                cost_price=obj_product.cost_price,
+                selling_price=obj_product.selling_price,
                 subtotal=obj_product.selling_price * float(int(gdg[1]))
                 )
             invoice_detail.save()
         if request.session.get('keranjang-cashier', None):
             del request.session['keranjang-cashier']
+        if request.session.get('discount', None):
+            del request.session['discount']
+        if request.session.get('discount_pk', None):
+            del request.session['discount_pk']
+        if request.session.get('pelanggan', None):
+            del request.session['pelanggan']
         cart.clear()
         return redirect(reverse_lazy('invoice_detail', kwargs={'invoice_number': invoice.invoice_number}))

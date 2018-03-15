@@ -1,7 +1,8 @@
 from django.conf.urls import include, url
 from django.contrib.auth.decorators import login_required
 from cashier.views import home, set_qty, add, show_cart, cart_total, remove_cart, \
-    testpost, mapping, checkout, InvoiceView
+    testpost, mapping, checkout, InvoiceView, \
+    set_discount, set_pelanggan
 
 urlpatterns = [
     url(r'^$', home, name='cashier'),
@@ -16,4 +17,6 @@ urlpatterns = [
     url(r'^checkout/$', checkout, name='checkout_cashier'),
 
     url(r'^invoice/(?P<invoice_number>[a-zA-Z\-0-9]+)$', InvoiceView.as_view(), name='invoice_detail'),
+    url(r'^set_discount/(?P<pk>[0-9]+)/$', set_discount, name='set_discount_cashier'),
+    url(r'^set_pelanggan/(?P<pk>[0-9]+)/$', set_pelanggan, name='set_pelanggan_cashier'),
 ]

@@ -62,8 +62,47 @@ $(document).ready(function() {
           $("#table-barang-kasir").load(BASE_URL + 'cashier/show_cart/');
       }
   });
+  $('#pelanggan').change(function() {
+    var pk = $(this).val();
+    if(pk != "") {
+      $.ajax({
+          type: "GET",
+          url: BASE_URL + 'cashier/set_pelanggan/' + pk,
+          cache: false,
+      });
+    }
+  });
+  $('#discount').change(function() {
+    var pk = $(this).val();
+    if(pk != "") {
+      $.ajax({
+          type: "GET",
+          url: BASE_URL + 'cashier/set_discount/' + pk,
+          cache: false,
+          beforeSend: function() {
+              $("#table-barang-kasir").html(loading());
+          },
+          success: function(res){
+            $("#table-barang-kasir").load(BASE_URL + 'cashier/show_cart/');
+          }
+      });
+    }
+  });
 });
 /* kasir */
+$(".js-matcher-customer").select2({
+    ajax: {
+        url: BASE_URL + 'customer/list_json',
+        dataType: 'json'
+    },
+    templateResult: formatOption
+});
+function formatOption (option) {
+  var $option = $(
+    '<div><strong>' + option.text + '</strong></div><div><i class="fa fa-phone"></i> ' + option.phone + '</div><div><i class="fa fa-map-marker"></i> ' + option.address + '</div>'
+  );
+  return $option;
+};
 $(".js-matcher-kasir").select2({
     ajax: {
         url: BASE_URL + 'product/list_json',
