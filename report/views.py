@@ -24,7 +24,7 @@ def get_json(request):
     keuntungan = []
     item = []
     if selisih.days > 365:
-        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncYear('created_at')).annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
+        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncYear('created_at')).values('category').annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
 
         for i in queryset:
             category.append(i['category'].year)
@@ -32,7 +32,7 @@ def get_json(request):
             keuntungan.append(i['keuntungan'])
             item.append(i['item'])
     elif selisih.days > 61:
-        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncMonth('created_at')).annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
+        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncMonth('created_at')).values('category').annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
 
         for i in queryset:
             category.append(datetime.strftime(i['category'], "%b %Y"))
@@ -40,7 +40,7 @@ def get_json(request):
             keuntungan.append(i['keuntungan'])
             item.append(i['item'])
     else:
-        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncDate('created_at')).annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
+        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncDate('created_at')).values('category').annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
 
         for i in queryset:
             category.append(i['category'].day)
