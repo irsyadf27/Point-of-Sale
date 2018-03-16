@@ -756,7 +756,6 @@ color: [
   '#26B99A', '#34495E', '#BDC3C7', '#3498DB',
   '#9B59B6', '#8abb6f', '#759c6a', '#bfd3b7'
 ],
-
 title: {
   itemGap: 8,
   textStyle: {
@@ -764,7 +763,20 @@ title: {
       color: '#408829'
   }
 },
-
+markPoint: {
+    label: {
+        normal: {
+            textStyle: {
+                color: "#ffffff"
+            }
+        },
+        emphasis: {
+            textStyle: {
+                color: "#000000"
+            }
+        }
+    }
+},
 dataRange: {
   color: ['#1f610a', '#97b58d']
 },
