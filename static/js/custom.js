@@ -2,6 +2,7 @@ $(document).ready(function() {
     var is_update = false;
     var can_update_slide = true;
     //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+    init_daterangepicker();
     var current_pathname = window.location.pathname;
     if(current_pathname.search(/receive/i) > 0) {
         load_table_keranjang_penerimaan();
@@ -675,4 +676,396 @@ function beep() {
     var snd = new Audio(BASE_URL + 'static/Beep2.ogg');
     snd.volume = 1.0;
     snd.play();
+}
+
+function init_daterangepicker() {
+
+    if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+    console.log('init_daterangepicker');
+
+    var cb = function(start, end, label) {
+      console.log(start.toISOString(), end.toISOString(), label);
+      $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    };
+
+    var optionSet1 = {
+      startDate: moment().subtract(7, 'days'),
+      endDate: moment(),
+      maxDate: moment(),
+      /*dateLimit: {
+        days: 60
+      },*/
+      showDropdowns: true,
+      showWeekNumbers: true,
+      timePicker: false,
+      timePickerIncrement: 1,
+      timePicker12Hour: true,
+      ranges: {
+        'Today': [moment(), moment()],
+        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+      },
+      opens: 'left',
+      buttonClasses: ['btn btn-default'],
+      applyClass: 'btn-small btn-primary',
+      cancelClass: 'btn-small',
+      format: 'MM/DD/YYYY',
+      separator: ' to ',
+      locale: {
+        applyLabel: 'Submit',
+        cancelLabel: 'Clear',
+        fromLabel: 'From',
+        toLabel: 'To',
+        customRangeLabel: 'Custom',
+        daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        firstDay: 1
+      }
+    };
+    load_chart(moment().subtract(29, 'days').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));
+    $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#reportrange').daterangepicker(optionSet1, cb);
+    $('#reportrange').on('show.daterangepicker', function(ev, picker) {
+      console.log("show event fired");
+    });
+    $('#reportrange').on('hide.daterangepicker', function() {
+      console.log("hide event fired");
+    });
+    $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
+        load_chart(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+      console.log("apply event fired, start/end dates are " + picker.startDate.format('YYYY-MM-DD') + " to " + picker.endDate.format('YYYY-MM-DD'));
+    });
+    $('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
+      console.log("cancel event fired");
+    });
+    $('#options1').click(function() {
+      $('#reportrange').data('daterangepicker').setOptions(optionSet1, cb);
+    });
+    $('#options2').click(function() {
+      $('#reportrange').data('daterangepicker').setOptions(optionSet2, cb);
+    });
+    $('#destroy').click(function() {
+      $('#reportrange').data('daterangepicker').remove();
+    });
+}
+var theme = {
+color: [
+  '#26B99A', '#34495E', '#BDC3C7', '#3498DB',
+  '#9B59B6', '#8abb6f', '#759c6a', '#bfd3b7'
+],
+
+title: {
+  itemGap: 8,
+  textStyle: {
+      fontWeight: 'normal',
+      color: '#408829'
+  }
+},
+
+dataRange: {
+  color: ['#1f610a', '#97b58d']
+},
+
+toolbox: {
+  color: ['#408829', '#408829', '#408829', '#408829']
+},
+
+tooltip: {
+  backgroundColor: 'rgba(0,0,0,0.5)',
+  axisPointer: {
+      type: 'line',
+      lineStyle: {
+          color: '#408829',
+          type: 'dashed'
+      },
+      crossStyle: {
+          color: '#408829'
+      },
+      shadowStyle: {
+          color: 'rgba(200,200,200,0.3)'
+      }
+  }
+},
+
+dataZoom: {
+  dataBackgroundColor: '#eee',
+  fillerColor: 'rgba(64,136,41,0.2)',
+  handleColor: '#408829'
+},
+grid: {
+  borderWidth: 0
+},
+
+categoryAxis: {
+  axisLine: {
+      lineStyle: {
+          color: '#408829'
+      }
+  },
+  splitLine: {
+      lineStyle: {
+          color: ['#eee']
+      }
+  }
+},
+
+valueAxis: {
+  axisLine: {
+      lineStyle: {
+          color: '#408829'
+      }
+  },
+  splitArea: {
+      show: true,
+      areaStyle: {
+          color: ['rgba(250,250,250,0.1)', 'rgba(200,200,200,0.1)']
+      }
+  },
+  splitLine: {
+      lineStyle: {
+          color: ['#eee']
+      }
+  }
+},
+timeline: {
+  lineStyle: {
+      color: '#408829'
+  },
+  controlStyle: {
+      normal: {color: '#408829'},
+      emphasis: {color: '#408829'}
+  }
+},
+
+k: {
+  itemStyle: {
+      normal: {
+          color: '#68a54a',
+          color0: '#a9cba2',
+          lineStyle: {
+              width: 1,
+              color: '#408829',
+              color0: '#86b379'
+          }
+      }
+  }
+},
+map: {
+  itemStyle: {
+      normal: {
+          areaStyle: {
+              color: '#ddd'
+          },
+          label: {
+              textStyle: {
+                  color: '#c12e34'
+              }
+          }
+      },
+      emphasis: {
+          areaStyle: {
+              color: '#99d2dd'
+          },
+          label: {
+              textStyle: {
+                  color: '#c12e34'
+              }
+          }
+      }
+  }
+},
+force: {
+  itemStyle: {
+      normal: {
+          linkStyle: {
+              strokeColor: '#408829'
+          }
+      }
+  }
+},
+chord: {
+  padding: 4,
+  itemStyle: {
+      normal: {
+          lineStyle: {
+              width: 1,
+              color: 'rgba(128, 128, 128, 0.5)'
+          },
+          chordStyle: {
+              lineStyle: {
+                  width: 1,
+                  color: 'rgba(128, 128, 128, 0.5)'
+              }
+          }
+      },
+      emphasis: {
+          lineStyle: {
+              width: 1,
+              color: 'rgba(128, 128, 128, 0.5)'
+          },
+          chordStyle: {
+              lineStyle: {
+                  width: 1,
+                  color: 'rgba(128, 128, 128, 0.5)'
+              }
+          }
+      }
+  }
+},
+gauge: {
+  startAngle: 225,
+  endAngle: -45,
+  axisLine: {
+      show: true,
+      lineStyle: {
+          color: [[0.2, '#86b379'], [0.8, '#68a54a'], [1, '#408829']],
+          width: 8
+      }
+  },
+  axisTick: {
+      splitNumber: 10,
+      length: 12,
+      lineStyle: {
+          color: 'auto'
+      }
+  },
+  axisLabel: {
+      textStyle: {
+          color: 'auto'
+      }
+  },
+  splitLine: {
+      length: 18,
+      lineStyle: {
+          color: 'auto'
+      }
+  },
+  pointer: {
+      length: '90%',
+      color: 'auto'
+  },
+  title: {
+      textStyle: {
+          color: '#333'
+      }
+  },
+  detail: {
+      textStyle: {
+          color: 'auto'
+      }
+  }
+},
+textStyle: {
+  fontFamily: 'Arial, Verdana, sans-serif'
+}
+};
+if ($('#mainb').length ){
+  
+  var echartBar = echarts.init(document.getElementById('mainb'), theme);
+    function load_chart(start_date, end_date) {
+        echartBar.showLoading();
+        $.getJSON(BASE_URL + 'report/get_json/?start_date=' + start_date + '&end_date=' + end_date, function(res) {
+          echartBar.setOption({
+            title: {
+              text: 'Grafik Penjualan',
+              subtext: start_date + ' - ' + end_date
+            },
+            tooltip: {
+              trigger: 'axis'
+            },
+            legend: {
+              data: ['Uang Masuk', 'Keuntungan', 'Item Terjual']
+            },
+            toolbox: {
+              show: true,
+              feature: {
+                magicType: {
+                  show: true,
+                  title: {
+                    line: 'Line',
+                    bar: 'Bar',
+                    stack: 'Stack',
+                    tiled: 'Tiled'
+                  },
+                  type: ['line', 'bar', 'stack', 'tiled']
+                },
+                restore: {
+                  show: true,
+                  title: "Restore"
+                },
+              }
+            },
+            calculable: false,
+            xAxis: [{
+              type: 'category',
+              data: res.category
+            }],
+            yAxis: [{
+              type: 'value'
+            }],
+            series: [{
+              name: 'Uang Masuk',
+              type: 'bar',
+              data: res.uang_masuk,
+              markPoint: {
+                data: [{
+                  type: 'max',
+                  name: 'Tertinggi'
+                }, {
+                  type: 'min',
+                  name: 'Terendah'
+                }]
+              },
+              markLine: {
+                data: [{
+                  type: 'average',
+                  name: 'Rata-Rata'
+                }]
+              }
+            }, {
+              name: 'Keuntungan',
+              type: 'bar',
+              data: res.keuntungan,
+              markPoint: {
+                data: [{
+                  type: 'max',
+                  name: 'Tertinggi'
+                }, {
+                  type: 'min',
+                  name: 'Terendah'
+                }]
+              },
+              markLine: {
+                data: [{
+                  type: 'average',
+                  name: 'Rata-Rata'
+                }]
+              }
+            }, {
+              name: 'Item Terjual',
+              type: 'bar',
+              data: res.item,
+              markPoint: {
+                data: [{
+                  type: 'max',
+                  name: 'Tertinggi'
+                }, {
+                  type: 'min',
+                  name: 'Terendah'
+                }]
+              },
+              markLine: {
+                data: [{
+                  type: 'average',
+                  name: 'Rata-Rata'
+                }]
+              }
+            }]
+          });
+        });
+        echartBar.hideLoading();
+    }
 }

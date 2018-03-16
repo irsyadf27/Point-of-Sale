@@ -9,11 +9,10 @@ class AccountForm(forms.ModelForm):
     username = forms.CharField(required=True)
     email = forms.CharField(required=True)
     is_superuser = forms.CharField(widget=forms.CheckboxInput(), label="Admin", required=False)
-    is_staff = forms.CharField(widget=forms.CheckboxInput(), label="Kasir", required=False)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'email', 'is_superuser', 'is_staff']
+        fields = ['first_name', 'last_name', 'username', 'email', 'is_superuser']
 
     def clean(self):
         cleaned_data = super(AccountForm, self).clean()

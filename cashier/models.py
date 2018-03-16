@@ -16,6 +16,7 @@ class Invoice(models.Model):
     qty = models.IntegerField()
     cashier = models.ForeignKey(User, related_name='invoice_by')
     created_at = models.DateTimeField(default=timezone.now)
+    cost_total = models.FloatField(blank=True, default=None, null=True)
     total = models.FloatField(blank=True, default=None)
 
     def __str__(self):

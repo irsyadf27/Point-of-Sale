@@ -127,6 +127,7 @@ def checkout(request):
     customer = None
     discount = None
     discount_size = 0
+    cost_total = 0
     if request.session.get('pelanggan', None):
         customer = Customer.objects.get(pk=request.session['pelanggan'])
     if request.session.get('discount', None):
@@ -163,6 +164,7 @@ def checkout(request):
                 subtotal=obj_product.selling_price * float(int(gdg[1]))
                 )
             invoice_detail.save()
+            cost_total += obj_product.cost_price * float(int(gdg[1]))
         if request.session.get('keranjang-cashier', None):
             del request.session['keranjang-cashier']
         if request.session.get('discount', None):
@@ -172,4 +174,6 @@ def checkout(request):
         if request.session.get('pelanggan', None):
             del request.session['pelanggan']
         cart.clear()
+        invoice.cost_total = cost_total
+        invoice.save()
         return redirect(reverse_lazy('invoice_detail', kwargs={'invoice_number': invoice.invoice_number}))
