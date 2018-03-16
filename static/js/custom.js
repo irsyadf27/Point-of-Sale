@@ -2,7 +2,6 @@ $(document).ready(function() {
     var is_update = false;
     var can_update_slide = true;
     //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
-    init_daterangepicker();
     var current_pathname = window.location.pathname;
     if(current_pathname.search(/receive/i) > 0) {
         load_table_keranjang_penerimaan();
@@ -725,7 +724,9 @@ function init_daterangepicker() {
         firstDay: 1
       }
     };
-    load_chart(moment().subtract(29, 'days').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));
+    if ($('#mainb').length ){
+        load_chart(moment().subtract(29, 'days').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD'));
+    }
     $('#reportrange span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
     $('#reportrange').daterangepicker(optionSet1, cb);
     $('#reportrange').on('show.daterangepicker', function(ev, picker) {
@@ -735,7 +736,9 @@ function init_daterangepicker() {
       console.log("hide event fired");
     });
     $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
-        load_chart(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+        if ($('#mainb').length ){
+            load_chart(picker.startDate.format('YYYY-MM-DD'), picker.endDate.format('YYYY-MM-DD'));
+        }
       console.log("apply event fired, start/end dates are " + picker.startDate.format('YYYY-MM-DD') + " to " + picker.endDate.format('YYYY-MM-DD'));
     });
     $('#reportrange').on('cancel.daterangepicker', function(ev, picker) {
