@@ -19,32 +19,34 @@ def get_json(request):
     a = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
     b = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S")
     selisih = b - a
+    category = []
+    uang_masuk = []
+    keuntungan = []
+    item = []
     if selisih.days > 365:
-        total_uang_masuk = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(tahun=TruncMonth('created_at')).values('tahun').annotate(jml=Sum('total')).values('tahun', 'jml')
-        total_keuntungan = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(tahun=TruncMonth('created_at')).values('tahun').annotate(jml=(Sum('total') - Sum('cost_total'))).values('jml')
-        total_item = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(tahun=TruncMonth('created_at')).values('tahun').annotate(jml=Sum('qty')).values('jml')
+        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncYear('created_at')).annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
 
-        hari = [i['tahun'].year for i in total_uang_masuk]
-        uang_masuk = [i['jml'] for i in total_uang_masuk]
-        keuntungan = [i['jml'] for i in total_keuntungan]
-        item = [i['jml'] for i in total_item]
+        for i in queryset:
+            category.append(i['category'].year)
+            uang_masuk.append(i['uang_masuk'])
+            keuntungan.append(i['keuntungan'])
+            item.append(i['item'])
     elif selisih.days > 61:
-        total_uang_masuk = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(bulan=TruncMonth('created_at')).values('bulan').annotate(jml=Sum('total')).values('bulan', 'jml')
-        total_keuntungan = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(bulan=TruncMonth('created_at')).values('bulan').annotate(jml=(Sum('total') - Sum('cost_total'))).values('jml')
-        total_item = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(bulan=TruncMonth('created_at')).values('bulan').annotate(jml=Sum('qty')).values('jml')
+        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncMonth('created_at')).annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
 
-        hari = [datetime.strftime(i['bulan'], "%b %Y") for i in total_uang_masuk]
-        uang_masuk = [i['jml'] for i in total_uang_masuk]
-        keuntungan = [i['jml'] for i in total_keuntungan]
-        item = [i['jml'] for i in total_item]
+        for i in queryset:
+            category.append(datetime.strftime(i['category'], "%b %Y"))
+            uang_masuk.append(i['uang_masuk'])
+            keuntungan.append(i['keuntungan'])
+            item.append(i['item'])
     else:
-        total_uang_masuk = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(hari=TruncDate('created_at')).values('hari').annotate(jml=Sum('total')).values('hari', 'jml')
-        total_keuntungan = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(hari=TruncDate('created_at')).values('hari').annotate(jml=(Sum('total') - Sum('cost_total'))).values('jml')
-        total_item = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(hari=TruncDate('created_at')).values('hari').annotate(jml=Sum('qty')).values('jml')
+        queryset = Invoice.objects.filter(created_at__range=[start_date,end_date]).annotate(category=TruncDate('created_at')).annotate(uang_masuk=Sum('total')).annotate(keuntungan=((Sum('total') - Sum('cost_total')) - Sum('discount_size'))).annotate(item=Sum('qty')).values('category', 'uang_masuk', 'keuntungan', 'item')
 
-        hari = [i['hari'].day for i in total_uang_masuk]
-        uang_masuk = [i['jml'] for i in total_uang_masuk]
-        keuntungan = [i['jml'] for i in total_keuntungan]
-        item = [i['jml'] for i in total_item]
-    res = {'category': hari, 'uang_masuk': uang_masuk, 'keuntungan': keuntungan, 'item': item}
+        for i in queryset:
+            category.append(i['category'].day)
+            uang_masuk.append(i['uang_masuk'])
+            keuntungan.append(i['keuntungan'])
+            item.append(i['item'])
+
+    res = {'category': category, 'uang_masuk': uang_masuk, 'keuntungan': keuntungan, 'item': item}
     return HttpResponse(json.dumps(res), content_type='application/json')
