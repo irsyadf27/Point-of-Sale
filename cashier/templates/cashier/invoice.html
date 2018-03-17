@@ -5,7 +5,7 @@
 {% load mathfilters %}
         <div class="right_col" role="main">
           <div class="">
-            <div class="page-title">
+            <div class="page-title hidden-print">
               <div class="title_left">
                 <h3>Invoice</h3>
               </div>
@@ -17,7 +17,7 @@
             <div class="clearfix"></div>
 
             <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
                     <h2>Invoice<small>#{{ invoice.invoice_number }}</small></h2>
@@ -25,10 +25,10 @@
                   </div>
                   <div class="x_content">
 
-                    <section class="content invoice">
+                    <section class="content">
                       <!-- title row -->
                       <div class="row">
-                        <div class="col-xs-12 invoice-header">
+                        <div class="col-xs-12">
 
                             <small class="pull-right">{{ invoice.created_at|date:"D, d M Y H:i" }}</small><br/>
 
@@ -36,8 +36,8 @@
                         <!-- /.col -->
                       </div>
                       {% if invoice.customer %}
-                      <div class="row invoice-info">
-                        <div class="col-sm-4 invoice-col">
+                      <div class="row">
+                        <div class="col-sm-4">
                           <address>
                               <strong>{{ invoice.customer.name }}</strong>
                               <br><i class="fa fa-phone"></i> {{ invoice.customer.phone }}
@@ -77,27 +77,27 @@
 
                       <div class="row">
                         <!-- /.col -->
-                        <div class="col-xs-6">
+                        <div class="col-xs-12">
                           <div class="table-responsive">
                             <table class="table">
                               <tbody>
                                 <tr>
-                                  <th>Subtotal:</th>
-                                  <td>Rp. {{ invoice.total }}</td>
+                                  <th class="text-right">Subtotal:</th>
+                                  <td class="text-right">Rp. {{ invoice.total }}</td>
                                 </tr>
                                 {% if invoice.discount %}
                                 <tr>
-                                  <th>Diskon:</th>
-                                  <td>Rp. {{ invoice.discount_size }}</td>
+                                  <th class="text-right">Diskon:</th>
+                                  <td class="text-right">Rp. {{ invoice.discount_size }}</td>
                                 </tr>
                                 <tr>
-                                  <th>Total:</th>
-                                  <td>Rp. {{ invoice.total|sub:invoice.discount_size }}</td>
+                                  <th class="text-right">Total:</th>
+                                  <td class="text-right">Rp. {{ invoice.total|sub:invoice.discount_size }}</td>
                                 </tr>
                                 {% else %}
                                 <tr>
-                                  <th>Total:</th>
-                                  <td>Rp. {{ invoice.total }}</td>
+                                  <th class="text-right">Total:</th>
+                                  <td class="text-right">Rp. {{ invoice.total }}</td>
                                 </tr>
                                 {% endif %}
                               </tbody>
@@ -110,7 +110,7 @@
 
 
                       <!-- this row will not appear when printing -->
-                      <div class="row no-print">
+                      <div class="row hidden-print">
                         <div class="col-xs-12">
                           <button class="btn btn-default" onclick="window.print();"><i class="fa fa-print"></i> Print</button>
                         </div>
