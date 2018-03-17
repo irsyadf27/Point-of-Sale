@@ -15,3 +15,10 @@ class Discount(models.Model):
         choices=discount_type_choice,
     )
     discount_value = models.FloatField()
+
+    @property
+    def text(self):
+        if self.discount_type == 'percent':
+            return "%s%%" % self.discount_value
+        else:
+            return "Rp. %d" % int(self.discount_value)

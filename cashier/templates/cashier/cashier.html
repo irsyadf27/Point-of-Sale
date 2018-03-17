@@ -67,13 +67,9 @@
                       <option value="">-</option>
                       {% for diskon in discount %}
                         {% if 'discount_pk' in request.session %}
-                          {% if diskon.pk == request.session.discount_pk %}
-                            <option value="{{ diskon.pk }}" selected>{{ diskon.name }}</option>
-                          {% else %}
-                            <option value="{{ diskon.pk }}">{{ diskon.name }}</option>
-                          {% endif %}
+                            <option value="{{ diskon.pk }}" {% if diskon.pk == request.session.discount_pk %}selected{% endif %}>{{ diskon.text }}</option>
                         {% else %}
-                          <option value="{{ diskon.pk }}">{{ diskon.name }}</option>
+                          <option value="{{ diskon.pk }}">{{ diskon.text }}</option>
                         {% endif %}
                       {% endfor %}
                     </select>

@@ -88,9 +88,13 @@ def remove_cart(request, pk):
 @login_required
 def set_qty(request, pk):
     cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
+    qty = request.POST.get('value', 0)
     product = Product.objects.get(id=pk)
-    cart.set_quantity(product, request.POST.get('value', 0))
-    res = {'pk': pk, 'qty':request.POST.get('value', 0), 'price': product.selling_price * float(request.POST.get('value', 0))}
+    max_stock = product.stock
+    if int(qty) > max_stock:
+        return HttpResponse(json.dumps({'error': 1, 'msg': 'Stok tidak mencukupi', 'max': max_stock}), content_type='application/json')
+    cart.set_quantity(product, qty)
+    res = {'pk': pk, 'qty': qty, 'price': product.selling_price * float(qty)}
     return HttpResponse(json.dumps(res), content_type='application/json')
 
 @login_required

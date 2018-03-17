@@ -58,8 +58,20 @@ $(document).ready(function() {
   $('#qty-product').focus();
   $('#table-barang-kasir').editable({
       selector: '.txt-qty',
+      display: function(value, response) {
+        return false;   //disable this method
+      },
       success: function(response, newValue) {
+        if(response.error == 1) {
+          swal(
+            'Error',
+            response.msg,
+            'error'
+          )
+          $(this).html(response.max);
+        } else {
           $("#table-barang-kasir").load(BASE_URL + 'cashier/show_cart/');
+        }
       }
   });
   $('#pelanggan').change(function() {
