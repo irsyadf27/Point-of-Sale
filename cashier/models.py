@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Invoice(models.Model):
     invoice_number = models.CharField(max_length=128, blank=False, unique=True)
-    customer = models.ForeignKey(Customer, related_name='invoice', null=True)
+    customer = models.ForeignKey(Customer, related_name='invoice', null=False)
     discount = models.ForeignKey(Discount, related_name='invoice', null=True)
     discount_size = models.FloatField(blank=True, default=None)
     qty = models.IntegerField()
