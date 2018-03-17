@@ -161,7 +161,15 @@ $(".js-matcher-kasir").change(function() {
                 $("#table-barang-kasir").html(loading());
             },
             success: function(res){
-              beep();
+              if(res.error == 1) {
+                swal(
+                  'Error',
+                  res.msg,
+                  'error'
+                )
+              } else {
+                beep();
+              }
               $("#table-barang-kasir").load(BASE_URL + 'cashier/show_cart/');
               $(".js-matcher-kasir").val(null).trigger("change");
               $('#qty-product').val(1);

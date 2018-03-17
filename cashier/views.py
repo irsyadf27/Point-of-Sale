@@ -72,8 +72,24 @@ def add(request):
     else:
         product = Product.objects.get(id=product_id)
     cart = Cart(request.session, session_key='CART-CASHIER-PRODUCT')
+    current_qty = 0
+    max_stock = product.stock
+    if cart._items_dict.get(int(product_id), None):
+        current_qty = cart._items_dict[int(product_id)].quantity
+
+    if max_stock == 0:
+        return HttpResponse(json.dumps({'error': 1, 'msg': 'Stok tidak mencukupi', 'max': max_stock}), content_type='application/json')
+
+    if (current_qty + int(qty)) > max_stock:
+        if cart.__contains__(product):
+            cart.set_quantity(product, max_stock)
+        else:
+            cart.add(product, price=product.selling_price, quantity=max_stock)
+        return HttpResponse(json.dumps({'error': 1, 'msg': 'Stok tidak mencukupi', 'max': max_stock}), content_type='application/json')
+
+
     cart.add(product, price=product.selling_price, quantity=qty)
-    return HttpResponse("Added")
+    return HttpResponse(json.dumps({'error': 0, 'msg': 'sukses'}), content_type='application/json')
 
 @login_required
 def remove_cart(request, pk):
@@ -91,7 +107,12 @@ def set_qty(request, pk):
     qty = request.POST.get('value', 0)
     product = Product.objects.get(id=pk)
     max_stock = product.stock
+
+    if max_stock == 0:
+        return HttpResponse(json.dumps({'error': 1, 'msg': 'Stok tidak mencukupi', 'max': max_stock}), content_type='application/json')
+
     if int(qty) > max_stock:
+        cart.set_quantity(product, max_stock)
         return HttpResponse(json.dumps({'error': 1, 'msg': 'Stok tidak mencukupi', 'max': max_stock}), content_type='application/json')
     cart.set_quantity(product, qty)
     res = {'pk': pk, 'qty': qty, 'price': product.selling_price * float(qty)}
