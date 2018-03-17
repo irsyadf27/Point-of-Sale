@@ -31,7 +31,9 @@ def add(request, pk):
 def remove_cart(request, pk):
     cart = Cart(request.session, session_key='CART-RETURN-PRODUCT')
     product = Product.objects.get(id=pk)
-    del request.session['keranjang-pengembalian'][pk]
+    if 'keranjang-pengembalian' in request.session:
+        if pk in request.session['keranjang-pengembalian']:
+            del request.session['keranjang-pengembalian'][pk]
     cart.remove(product)
     return HttpResponse("Removed")
 
@@ -45,7 +47,6 @@ def set_qty(request, pk):
 
 @login_required
 def show_cart(request):
-    print request.session['keranjang-pengembalian']
     return render(request, 'returned_product/return/table.html')
 
 @login_required
@@ -101,5 +102,9 @@ def checkout(request):
                 returned_detail.save()
                 obj_warehouse.stock = int(z[1])
                 obj_warehouse.save()
+
+    if 'keranjang-pengembalian' in request.session:
+        del request.session['keranjang-pengembalian'] 
+
     cart.clear()
     return HttpResponse("Success")

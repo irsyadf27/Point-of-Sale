@@ -1,4 +1,6 @@
 {% load carton_tags %}
 {% load mathfilters %}
 {% load product_tags %}
-<h2>{% cart_total_returnded %}</h2>
+{% get_cart 'CART-RETURN-PRODUCT' as cart %}
+
+<h2>Rp. {{ cart.total }}</h2>

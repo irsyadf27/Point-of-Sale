@@ -51,7 +51,9 @@ def add(request, pk):
 def remove_cart(request, pk):
     cart = Cart(request.session, session_key='CART-RECEIVE-PRODUCT')
     product = Product.objects.get(id=pk)
-    del request.session['keranjang-penerimaan'][pk]
+    if 'keranjang-penerimaan' in request.session:
+        if pk in request.session['keranjang-penerimaan']:
+            del request.session['keranjang-penerimaan'][pk]
     cart.remove(product)
     return HttpResponse("Removed")
 
@@ -121,7 +123,7 @@ def checkout(request):
             for x in warehouse:
                 list_range.append(request.POST.get('range[%s][%s]' % (i, x)))
             list_warehouse = zip(warehouse, list_range)
-            print list_warehouse
+
             for z in list_warehouse:
                 obj_wh = Warehouse.objects.get(pk=int(z[0]))
                 obj_warehouse, created = ProductWarehouse.objects.get_or_create(product=obj_product, warehouse=obj_wh, defaults={'stock': int(z[1])})
@@ -135,5 +137,8 @@ def checkout(request):
                 if not created:
                     obj_warehouse.stock = obj_warehouse.stock + int(z[1])
                     obj_warehouse.save()
+                    
+    if 'keranjang-penerimaan' in request.session:
+        del request.session['keranjang-penerimaan']      
     cart.clear()
     return HttpResponse("Success")

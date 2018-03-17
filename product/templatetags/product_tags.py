@@ -167,11 +167,11 @@ def cart_total_returnded(context):
                 total = total + int(i[1])
     {u'2': {u'warehouse': [[u'2', u'2'], [u'1', u'0'], [u'4', u'0']], u'range': [u'2', u'0', u'0'], u'remain': u'0'}}
     '''
-    print request.session['keranjang-pengembalian']
-    for i in request.session['keranjang-pengembalian']:
-        product = Product.objects.get(pk=i)
-        for x in request.session['keranjang-pengembalian'][i]['range']:
-            total = total + (product.cost_price * float(x))
+    if 'keranjang-pengembalian' in request.session:
+        for i in request.session['keranjang-pengembalian']:
+            product = Product.objects.get(pk=i)
+            for x in request.session['keranjang-pengembalian'][i]['range']:
+                total = total + (product.cost_price * float(x))
 
     return "Rp. %s" % total
 

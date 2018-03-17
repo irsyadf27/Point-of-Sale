@@ -88,6 +88,30 @@ $(document).ready(function() {
       });
     }
   });
+
+
+  $('#save-tambah-pelanggan').click(function() {
+    $('#modal-tambah-pelanggan').modal('hide');
+    var data = $("form#form-tambah-pelanggan").serialize();
+    $.ajax({
+        type: "POST",
+        url: BASE_URL + 'customer/create/',
+        data: data,
+        cache: false,
+        success: function(res){
+          swal(
+            'Success',
+            'Berhasil menambah pelanggan!',
+            'success'
+          )
+          $('#id_name').val('');
+          $('#id_address').val('');
+          $('#id_address').val('');
+        }
+    });
+
+  });
+
 });
 /* kasir */
 $(".js-matcher-customer").select2({

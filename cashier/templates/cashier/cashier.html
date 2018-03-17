@@ -59,7 +59,7 @@
                         <option value="">-</option>
                       </select>
                       <span class="input-group-btn">
-                        <button type="button" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-tambah-pelanggan"><i class="fa fa-plus"></i></button>
                       </span>
                     </div>
                     <label for="discount">Diskon:</label>
@@ -125,4 +125,42 @@
             </div>
           </div>
         </div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal-tambah-pelanggan">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Tambah Pelanggan</h4>
+      </div>
+      <div class="modal-body" id="body-tambah-pelanggan">
+        <form class="form-horizontal" id="form-tambah-pelanggan">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label class="control-label col-sm-2 col-lg-2 " for="id_name">Nama</label>
+            <div class=" col-sm-10 col-lg-10 ">
+              <input class=" form-control" id="id_name" name="name" type="text" required="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2 col-lg-2 " for="id_address">Alamat</label>
+            <div class=" col-sm-10 col-lg-10 ">
+              <input class=" form-control" id="id_address" name="address" type="text" required="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2 col-lg-2 " for="id_phone">No. Telp/HP</label>
+            <div class=" col-sm-10 col-lg-10 ">
+              <input class=" form-control" id="id_phone" name="phone" type="text">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-primary" id="save-tambah-pelanggan">Tambah Pelanggan</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}

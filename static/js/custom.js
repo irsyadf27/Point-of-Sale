@@ -2,6 +2,7 @@ $(document).ready(function() {
     var is_update = false;
     var can_update_slide = true;
     //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
+    init_daterangepicker();
     var current_pathname = window.location.pathname;
     if(current_pathname.search(/receive/i) > 0) {
         load_table_keranjang_penerimaan();
