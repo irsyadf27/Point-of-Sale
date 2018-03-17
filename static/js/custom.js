@@ -3,6 +3,7 @@ $(document).ready(function() {
     var can_update_slide = true;
     //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
     init_daterangepicker();
+    init_daterangepicker_transaksi();
     var current_pathname = window.location.pathname;
     if(current_pathname.search(/receive/i) > 0) {
         load_table_keranjang_penerimaan();
@@ -677,6 +678,86 @@ function beep() {
     snd.volume = 1.0;
     snd.play();
 }
+function init_daterangepicker_transaksi() {
+
+    if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+    console.log('init_daterangepicker');
+
+    var cb = function(start, end, label) {
+      console.log(start.toISOString(), end.toISOString(), label);
+      $('#reportrange-transaksi span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+    };
+    var daftar_transaksi = $('#daftar-transaksi').dataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": BASE_URL + 'transaction/data/?start_date=' + moment().subtract(29, 'days').format('YYYY-MM-DD') + '&end_date=' + moment().format('YYYY-MM-DD'),
+        columnDefs: [
+             { orderable: false, targets: [-1] }
+        ]
+    });
+    var optionSet1 = {
+      startDate: moment().subtract(7, 'days'),
+      endDate: moment(),
+      maxDate: moment(),
+      /*dateLimit: {
+        days: 60
+      },*/
+      showDropdowns: true,
+      showWeekNumbers: true,
+      timePicker: false,
+      timePickerIncrement: 1,
+      timePicker12Hour: true,
+      ranges: {
+        'Today': [moment(), moment()],
+        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+      },
+      opens: 'left',
+      buttonClasses: ['btn btn-default'],
+      applyClass: 'btn-small btn-primary',
+      cancelClass: 'btn-small',
+      format: 'MM/DD/YYYY',
+      separator: ' to ',
+      locale: {
+        applyLabel: 'Submit',
+        cancelLabel: 'Clear',
+        fromLabel: 'From',
+        toLabel: 'To',
+        customRangeLabel: 'Custom',
+        daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+        monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        firstDay: 1
+      }
+    };
+
+    $('#reportrange-transaksi span').html(moment().subtract(29, 'days').format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+    $('#reportrange-transaksi').daterangepicker(optionSet1, cb);
+    $('#reportrange-transaksi').on('show.daterangepicker', function(ev, picker) {
+      console.log("show event fired");
+    });
+    $('#reportrange-transaksi').on('hide.daterangepicker', function() {
+      console.log("hide event fired");
+    });
+    $('#reportrange-transaksi').on('apply.daterangepicker', function(ev, picker) {
+        daftar_transaksi.api().ajax.url(BASE_URL + 'transaction/data/?start_date=' + picker.startDate.format('YYYY-MM-DD') + '&end_date=' + picker.endDate.format('YYYY-MM-DD')).load();
+       console.log("apply event fired, start/end dates are " + picker.startDate.format('YYYY-MM-DD') + " to " + picker.endDate.format('YYYY-MM-DD'));
+    });
+    $('#reportrange-transaksi').on('cancel.daterangepicker', function(ev, picker) {
+      console.log("cancel event fired");
+    });
+    $('#options1').click(function() {
+      $('#reportrange-transaksi').data('daterangepicker').setOptions(optionSet1, cb);
+    });
+    $('#options2').click(function() {
+      $('#reportrange-transaksi').data('daterangepicker').setOptions(optionSet2, cb);
+    });
+    $('#destroy').click(function() {
+      $('#reportrange-transaksi').data('daterangepicker').remove();
+    });
+}
 
 function init_daterangepicker() {
 
@@ -751,6 +832,7 @@ function init_daterangepicker() {
       $('#reportrange').data('daterangepicker').remove();
     });
 }
+
 var theme = {
 color: [
   '#26B99A', '#34495E', '#BDC3C7', '#3498DB',

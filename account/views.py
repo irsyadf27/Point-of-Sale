@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.contrib.auth.models import User
 from account.forms import AccountForm, SettingForm
+from django.db.models import Q
 
 # Create your views here.
 @login_required

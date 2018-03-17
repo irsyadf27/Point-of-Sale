@@ -3,7 +3,9 @@ from django.shortcuts import render
 from django.core.urlresolvers import reverse_lazy, reverse
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.views.generic import DetailView
+from django.db.models import Q
 from cashier.models import Invoice
+from datetime import datetime
 
 # Create your views here.
 @login_required
@@ -17,10 +19,10 @@ class TransactionDetailView(DetailView):
     slug_url_kwarg = 'invoice_number'
     query_pk_and_slug = True
 
-class TransactionListJson(BaseDatatableView):
+class TransactionListJson(BaseDatatableView):  
     model = Invoice
-    columns = ['invoice_number', 'customer_name', 'created_at', 'qty', 'total']
-    order_columns = ['invoice_number', 'customer_name', 'created_at', 'qty', 'total']
+    columns = ['invoice_number', 'customer__name', 'created_at', 'qty', 'total']
+    order_columns = ['invoice_number', 'customer__name', 'created_at', 'qty', 'total']
     max_display_length = 500
 
     def prepare_results(self, qs):
@@ -29,20 +31,19 @@ class TransactionListJson(BaseDatatableView):
             json_data.append([
                 item.invoice_number,
                 item.customer.name,
-                item.created_at,
+                datetime.strftime(item.created_at, "%a, %d %b %Y %H:%M"),
                 item.qty,
                 item.total,
-                "<a href='%s' class='btn btn-sm btn-default'><i class='fa fa-pencil-square-o'></i> Detail</a>" % (reverse('detail_transaction', kwargs = {'pk' : item.id, }))
+                "<a href='%s' class='btn btn-sm btn-primary'><i class='fa fa-credit-card'></i> Detail</a>" % (reverse('detail_transaction', kwargs = {'invoice_number' : item.invoice_number, }))
             ])
         return json_data
         
     def filter_queryset(self, qs):
+        start_date = self.request.GET.get(u'start_date', '2018-03-10') + " 00:00:00"
+        end_date = self.request.GET.get(u'end_date', '2018-03-16') + " 23:59:59"
         search = self.request.GET.get(u'search[value]', None)
         if search:
-            qs = qs.filter(Q(first_name__contains=search) | 
-                Q(last_name__contains=search) | 
-                Q(username__contains=search) |
-                Q(email__contains=search)
-                )
-
+            qs = qs.filter(Q(created_at__range=[start_date,end_date]) & (Q(invoice_number__contains=search) | Q(customer__name__contains=search)))
+        else:
+            qs = qs.filter(created_at__range=[start_date,end_date])
         return qs

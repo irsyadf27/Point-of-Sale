@@ -58,7 +58,7 @@ class SettingForm(forms.ModelForm):
                 "Password dan Konfirmasi Password tidak sama."
             )
 
-        if User.objects.filter(email__iexact=cleaned_data.get("email")).exclude(username=cleaned_data.get("username")).exists():
+        if User.objects.filter(email__iexact=cleaned_data.get("email")).exclude(pk=self.instance.id).exists():
             raise forms.ValidationError(
                 "Email sudah ada yang menggunakan."
             )

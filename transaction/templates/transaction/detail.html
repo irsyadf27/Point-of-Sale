@@ -10,7 +10,7 @@
                 <h3>Invoice</h3>
               </div>
               <div class="pull-right">
-                <a class="btn btn-default" href="{% url 'cashier' %}"><i class="fa fa-chevron-left"></i> Transaksi Baru</a>
+                <a class="btn btn-default" href="{% url 'transaction' %}"><i class="fa fa-chevron-left"></i> Daftar Transaksi</a>
               </div>
             </div>
 
@@ -42,6 +42,13 @@
                               <strong>{{ invoice.customer.name }}</strong>
                               <br><i class="fa fa-phone"></i> {{ invoice.customer.phone }}
                               <br><i class="fa fa-map-marker"></i> {{ invoice.customer.address }}
+                          </address>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4">
+                          <address>
+                              <strong>Kasir</strong>
+                              <br>{{ invoice.cashier.first_name }} {{ invoice.cashier.last_name }}
                           </address>
                         </div>
                         <!-- /.col -->
