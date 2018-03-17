@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'received_product',
     'returned_product',
     'cashier',
+    'transaction',
 
     'sslserver',
 ]

@@ -124,6 +124,18 @@ $(document).ready(function() {
 
   });
 
+  $('#submit-cashier').click(function() {
+    var pelanggan = $('#pelanggan');
+    if(pelanggan.val() == '') {
+      swal(
+        'Oops...',
+        'Pelanggan masih kosong.',
+        'error'
+      );
+    } else {
+      window.location.href = BASE_URL + 'cashier/mapping/';
+    }
+  });
 });
 /* kasir */
 $(".js-matcher-customer").select2({
