@@ -1,0 +1,51 @@
+{% load carton_tags %}
+{% load mathfilters %}
+{% load product_tags %}
+{% load staticfiles %}
+{% get_cart 'CART-RETURN-CUSOMER' as cart %}
+  <form action="{% url 'testpost_customer_return' %}" method="post" id="form-keranjang-penerimaan">
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Nama Produk</th>
+      <th>Harga</th>
+      <th>qty</th>
+      <th>Subtotal</th>
+      <th><button type="button" onclick="javascript: load_table_keranjang_retur();" class="btn btn-sm btn-warning pull-right"><i class="fa fa-refresh"></i> Save/Refresh</button></th>
+    </tr>
+  </thead>
+  <tbody id="keranjang-diterima">
+{% csrf_token %}
+{% for item in cart.items %}
+<div class="clearfix"></div>
+<tr>
+    <td>{{ item.product.name }}</td>
+    <td>{{ item.price }}</td>
+    <td>{{ item.quantity }}</td>
+    <td id="txt-subtotal-{{ item.product.pk }}">{{ item.subtotal }}</td>
+    <td style="width: 100px">
+        <button type="button" class="btn btn-sm btn-primary" id="show-mapping-{{ item.product.pk }}"><i class="fa fa-chevron-up"></i> Gudang</button>
+    </td>
+</tr>
+<tr id="tr-mapping-{{ item.product.pk }}">
+    <div class="clearfix"></div>
+    <td colspan="5">
+        <div id="mapping-{{ item.product.pk }}">
+            <table class="table table-bordered">
+                <tr>
+                    <th style="width: 300px">Gudang</th>
+                    <th style="width: 300px">Stok Sekarang</th>
+                    <th>Sisa: <span class="sisa-{{ item.product.pk }}" data-produk="{{ item.product.name }}">{% remain_stock_return item.product.pk item.quantity %}</span></th>
+                    <input type="hidden" name="sisa[{{ item.product.pk }}]" id="txt-sisa-{{ item.product.pk }}" value="{% remain_stock_return item.product.pk item.quantity %}">
+                    <th style="width: 80px"></th>
+                    <input type="hidden" name="product" value="{{ item.product.pk }}">
+                </tr>
+                {% customer_return_tags item.product.pk item.quantity %}
+            </table>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+    </tbody>
+</table>
+</form>

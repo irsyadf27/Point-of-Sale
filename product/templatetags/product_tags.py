@@ -6,6 +6,69 @@ from django.utils.safestring import mark_safe
 from django.db.models import Sum
 
 register = template.Library()
+@register.simple_tag(takes_context=True)
+def remain_stock_return(context, product_id, qty_product):
+    request = context['request']
+    total = 0
+    if 'keranjang-customer-return' in request.session and bool(request.session['keranjang-customer-return']):
+        if str(product_id) in request.session['keranjang-customer-return']:
+            rng = sum(int(x[1]) for x in request.session['keranjang-customer-return'][str(product_id)]['warehouse'])
+            cnt = len(request.session['keranjang-customer-return'][str(product_id)]['warehouse'])
+        else:
+            rng = 0
+            cnt = 0
+        if str(product_id) in request.session['keranjang-customer-return']:
+            for i in request.session['keranjang-customer-return'][str(product_id)]['warehouse']:
+                if qty_product < rng:
+                    i[1] = qty_product/cnt
+                total = total + int(i[1])
+                pass
+        else:
+            total = 0
+    else:
+        total = 0
+
+    return qty_product - total
+
+@register.simple_tag(takes_context=True)
+def customer_return_tags(context, product_id, qty_product):
+    request = context['request']
+    tbl_warehouse = []
+    if 'keranjang-customer-return' in request.session and bool(request.session['keranjang-customer-return']):
+        if str(product_id) in request.session['keranjang-customer-return']:
+            rng = sum(int(x[1]) for x in request.session['keranjang-customer-return'][str(product_id)]['warehouse'])
+            cnt = len(request.session['keranjang-customer-return'][str(product_id)]['warehouse'])
+            product = Product.objects.get(pk=product_id)
+            for i in request.session['keranjang-customer-return'][str(product_id)]['warehouse']:
+                try:
+                    warehouse = Warehouse.objects.get(pk=i[0])
+                    try:
+                        product_warehouse = ProductWarehouse.objects.get(product=product, warehouse=warehouse)
+                    except ProductWarehouse.DoesNotExist:
+                        product_warehouse = lambda: None
+                        product_warehouse.stock = 0
+                        product_warehouse.pk = -1
+                    if qty_product < rng:
+                        i[1] = qty_product/cnt
+                    tbl_warehouse.append('<tr><input type="hidden" name="warehouse[%s]" value="%s"><td>%s</td><td>%s</td><td class="grid_slider"><input type="text" class="stock-slider3-%s-%s" data-warehouse="%s" data-pk="%s" data-min="0" data-prev="%s" value="%s" name="range[%s][%s]"/></td><td><input type="number" class="form-control stock-input-%s-%s" value="%s"></td></tr>' % (product_id, warehouse.pk, warehouse.name, product_warehouse.stock, product_id, warehouse.pk, warehouse.pk, product.pk, i[1], i[1], product.pk, warehouse.pk, product.pk, warehouse.pk, i[1]))
+                except Warehouse.DoesNotExist:
+                    pass
+        else:
+            product = Product.objects.get(pk=product_id)
+            product_warehouse = ProductWarehouse.objects.filter(product=product)
+            tbl_warehouse = []
+            for i in product_warehouse:
+                qty = int(qty_product)
+                tbl_warehouse.append('<tr><input type="hidden" name="warehouse[%s]" value="%s"><td>%s</td><td>%s</td><td class="grid_slider"><input type="text" class="stock-slider3-%s-%s" data-warehouse="%s" data-pk="%s" data-min="0" data-prev="%s" value="%s" name="range[%s][%s]"/></td><td><input type="number" class="form-control stock-input-%s-%s" value="%s"></td></tr>' % (product_id, i.warehouse.pk, i.warehouse.name, i.stock, product_id, i.warehouse.pk, i.warehouse.pk, i.product.pk, 0, 0, i.product.pk, i.warehouse.pk, i.product.pk, i.warehouse.pk, 0))
+    else:
+        product = Product.objects.get(pk=product_id)
+        product_warehouse = ProductWarehouse.objects.filter(product=product)
+        tbl_warehouse = []
+        for i in product_warehouse:
+            qty = int(qty_product)
+            tbl_warehouse.append('<tr><input type="hidden" name="warehouse[%s]" value="%s"><td>%s</td><td>%s</td><td class="grid_slider"><input type="text" class="stock-slider3-%s-%s" data-warehouse="%s" data-pk="%s" data-min="0" data-prev="%s" value="%s" name="range[%s][%s]"/></td><td><input type="number" class="form-control stock-input-%s-%s" value="%s"></td></tr>' % (product_id, i.warehouse.pk, i.warehouse.name, i.stock, product_id, i.warehouse.pk, i.warehouse.pk, i.product.pk, 0, 0, i.product.pk, i.warehouse.pk, i.product.pk, i.warehouse.pk, 0))
+    
+    return mark_safe(''.join(tbl_warehouse))
 
 @register.simple_tag(takes_context=True)
 def warehouse(context, product_id, qty_product):

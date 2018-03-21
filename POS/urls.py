@@ -32,4 +32,6 @@ urlpatterns = [
     url(r'^report/', include('report.urls')),
     url(r'^cashier/', include('cashier.urls')),
     url(r'^transaction/', include('transaction.urls')),
+    url(r'^customer_return/', include('customer_return.urls')),
+    url(r'^config/', include('config.urls')),
 ]

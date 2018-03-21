@@ -70,7 +70,7 @@
                               {% for produk in invoice.details.all %}
                               <tr>
                                 <td>{{ produk.product_warehouse.product.name }}</td>
-                                <td>Rp. {{ produk.price }}</td>
+                                <td>Rp. {{ produk.selling_price }}</td>
                                 <td>{{ produk.qty }}</td>
                                 <td>Rp. {{ produk.subtotal }}</td>
                               </tr>

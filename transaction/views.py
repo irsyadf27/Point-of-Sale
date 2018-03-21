@@ -43,7 +43,7 @@ class TransactionListJson(BaseDatatableView):
         end_date = self.request.GET.get(u'end_date', '2018-03-16') + " 23:59:59"
         search = self.request.GET.get(u'search[value]', None)
         if search:
-            qs = qs.filter(Q(created_at__range=[start_date,end_date]) & (Q(invoice_number__contains=search) | Q(customer__name__contains=search)))
+            qs = qs.filter(Q(created_at__range=[start_date,end_date]) & (Q(invoice_number__contains=search) | Q(customer__name__contains=search))).order_by('-created_at')
         else:
-            qs = qs.filter(created_at__range=[start_date,end_date])
+            qs = qs.filter(created_at__range=[start_date,end_date]).order_by('-created_at')
         return qs
