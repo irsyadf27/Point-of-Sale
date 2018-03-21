@@ -19,5 +19,5 @@ class ReturDetail(models.Model):
     retur = models.ForeignKey(Retur, related_name='details')
     product_warehouse = models.ForeignKey(ProductWarehouse)
     qty = models.IntegerField()
-    #selling_price = models.FloatField(blank=True, default=None)
+    selling_price = models.FloatField(blank=True, default=None)
     subtotal = models.FloatField(blank=True, default=None)
