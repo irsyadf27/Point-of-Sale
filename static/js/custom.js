@@ -1,11 +1,13 @@
+var current_pathname = window.location.pathname;
 $(document).ready(function() {
     var is_update = false;
     var can_update_slide = true;
     //$("#keranjang-diterima").load(BASE_URL + 'product/show_cart/', init_slider);
     init_daterangepicker();
     init_daterangepicker_transaksi();
-    var current_pathname = window.location.pathname;
-    if(current_pathname.search(/receive/i) > 0) {
+    if(current_pathname.search(/customer_return/i) > 0) {
+        load_table_keranjang_retur();
+    } else if(current_pathname.search(/receive/i) > 0) {
         load_table_keranjang_penerimaan();
     } else if(current_pathname.search(/return/i) > 0) {
         load_table_keranjang_pengembalian();
@@ -149,7 +151,27 @@ $(document).ready(function() {
             var prev = parseInt($(this).data('prev'));
             var patt = /stock-slider2-([0-9+])-([0-9+])/i;
             var a = $(this).attr('class').match(patt);
-            if((sisa - ($(this).val() - prev) >= 0) && ($(this).val() != prev)) {
+            if($(this).data('prev') >= $(this).val()) {
+                var zzz = $(this).data('prev') - $(this).val();
+                $('.sisa-' + $(this).data('pk')).text(sisa + zzz);
+                $('#txt-sisa-' + pk).val(sisa + zzz);
+            } else {
+                var zzz =  $(this).val() - $(this).data('prev');
+                var max = prev + sisa;
+                if(sisa - zzz <= 0) {
+                    $('.sisa-' + $(this).data('pk')).text(0);
+                    $('#txt-sisa-' + pk).val(0);
+                    is_update = true;
+                    can_update_slide = false;
+                    update_slider2($(this), {'from': max});
+                } else {
+                    $('.sisa-' + $(this).data('pk')).text(sisa - zzz);
+                    $('#txt-sisa-' + pk).val(sisa - zzz);
+                }
+            }
+            $('.stock-input-' + pk + '-' + a[2]).val($(this).val());
+            $(this).data('prev', $(this).val());
+            /*if((sisa - ($(this).val() - prev) >= 0) && ($(this).val() != prev)) {
                 $('.sisa-' + $(this).data('pk')).text(sisa - ($(this).val() - prev));
                 $('#txt-sisa-' + pk).val(sisa - ($(this).val() - prev));
                 $(this).val($(this).val());
@@ -167,7 +189,7 @@ $(document).ready(function() {
                 is_update = true;
                 can_update_slide = false;
                 update_slider($(this), prev);
-            }
+            }*/
         }
     });
 
@@ -178,22 +200,27 @@ $(document).ready(function() {
             var prev = parseInt($(this).data('prev'));
             var patt = /stock-slider3-([0-9+])-([0-9+])/i;
             var a = $(this).attr('class').match(patt);
-            $('.sisa-' + $(this).data('pk')).text(sisa - $(this).val());
-            $('#txt-sisa-' + pk).val(sisa - $(this).val());
-            $('.stock-input-' + pk + '-' + a[2]).val($(this).val());
-            /*if((sisa - $(this).val() >= 0) && ($(this).val() != prev)) {
-                $('.sisa-' + $(this).data('pk')).text(sisa - $(this).val());
-                $('#txt-sisa-' + pk).val(sisa - $(this).val());
-                $(this).val($(this).val());
-                $(this).data('prev', $(this).val());
-                $('.stock-input-' + pk + '-' + a[2]).val($(this).val());
-                //update_slider(el, prev+sisa);
-            } else {
-                $(this).val(prev);
-                $('.stock-input-' + pk + '-' + a[2]).val($(this).val());
-            }
-            */
 
+            if($(this).data('prev') >= $(this).val()) {
+                var zzz = $(this).data('prev') - $(this).val();
+                $('.sisa-' + $(this).data('pk')).text(sisa + zzz);
+                $('#txt-sisa-' + pk).val(sisa + zzz);
+            } else {
+                var zzz =  $(this).val() - $(this).data('prev');
+                var max = prev + sisa;
+                if(sisa - zzz <= 0) {
+                    $('.sisa-' + $(this).data('pk')).text(0);
+                    $('#txt-sisa-' + pk).val(0);
+                    is_update = true;
+                    can_update_slide = false;
+                    update_slider2($(this), {'from': max});
+                } else {
+                    $('.sisa-' + $(this).data('pk')).text(sisa - zzz);
+                    $('#txt-sisa-' + pk).val(sisa - zzz);
+                }
+            }
+            $('.stock-input-' + pk + '-' + a[2]).val($(this).val());
+            $(this).data('prev', $(this).val());
         }
     });
 
@@ -510,24 +537,32 @@ $(document).ready(function() {
             var data = $("form#form-keranjang-penerimaan").serialize() + '&invoice_number=' + $('#invoice_number').val();
             $.ajax({
                 type: "POST",
-                url: BASE_URL + 'customer_return/checkout/',
-                data: data,
+                url: BASE_URL + 'customer_return/testpost/',
+                data: $("form#form-keranjang-penerimaan").serialize(),
                 cache: false,
                 success: function(res){
-                    swal(
-                      'Success',
-                      'Berhasil mengembalikan produk!',
-                      'success'
-                    )
                     $.ajax({
-                        url: BASE_URL + 'customer_return/show_cart/',
+                        type: "POST",
+                        url: BASE_URL + 'customer_return/checkout/',
+                        data: data,
                         cache: false,
                         success: function(res){
-                            $("#mapping-gudang").html($(res));
-                            init_slider();
+                            swal(
+                              'Success',
+                              'Berhasil mengembalikan produk!',
+                              'success'
+                            )
+                            $.ajax({
+                                url: BASE_URL + 'customer_return/show_cart/',
+                                cache: false,
+                                success: function(res){
+                                    $("#mapping-gudang").html($(res));
+                                    init_slider();
+                                }
+                            });
+                            $("#total-harga-diterima").load(BASE_URL + 'customer_return/cart_total/');
                         }
                     });
-                    $("#total-harga-diterima").load(BASE_URL + 'customer_return/cart_total/');
                 }
             });
         });
@@ -545,6 +580,7 @@ function init_slider() {
             min:0,
             max: prev+sisa
         });
+
     });
     $('#mapping-gudang input[class*="stock-slider3-"]').each(function(i, el){
         var prev = parseInt($(this).data('prev'));
@@ -552,11 +588,12 @@ function init_slider() {
         var a = $(this).attr('class').match(patt);
         var pk = a[1]
         var sisa = parseInt($('.sisa-' + pk).text());
-
+        var qty = parseInt($('#qty-' + pk).val());
         $('.' + el.className).ionRangeSlider({
             min:0,
-            max: sisa
+            max: qty
         });
+
     });
 }
 function load_table_keranjang_retur() {

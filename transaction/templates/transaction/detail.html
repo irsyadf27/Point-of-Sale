@@ -128,8 +128,78 @@
               </div>
             </div>
 
+            <div class="row hidden-print">
+            {% for retur in invoice.retur.all %}
+              <div class="col-md-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Retur <small>#{{ retur.invoice.invoice_number }}</small></h2>
+                    <span class="pull-right">Kasir: {{ retur.cashier.first_name }} {{ retur.cashier.last_name }}</span>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
 
+                    <section class="content">
+                      <!-- title row -->
+                      <div class="row">
+                        <div class="col-xs-12">
 
+                            <small class="pull-right">{{ retur.created_at|date:"D, d M Y H:i" }}</small><br/>
+
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- Table row -->
+                      <div class="row">
+                        <div class="col-xs-12 table">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>Produk</th>
+                                <th>Harga</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for produk in retur.details.all %}
+                              <tr>
+                                <td>{{ produk.product_warehouse.product.name }}</td>
+                                <td>Rp. {{ produk.selling_price }} (-Rp. {{ retur.potongan }})</td>
+                                <td>{{ produk.qty }}</td>
+                                <td>Rp. {{ produk.subtotal }}</td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+
+                      <div class="row">
+                        <!-- /.col -->
+                        <div class="col-xs-12">
+                          <div class="table-responsive">
+                            <table class="table">
+                              <tbody>
+                                <tr>
+                                  <th class="text-right">Total:</th>
+                                  <td class="text-right">Rp. {{ invoice.total }}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <!-- /.col -->
+                      </div>
+                      <!-- /.row -->
+                    </section>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+            </div>
           </div>
         </div>
 {% endblock %}

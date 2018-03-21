@@ -11,7 +11,7 @@
       <th>Harga</th>
       <th>qty</th>
       <th>Subtotal</th>
-      <th><button type="button" onclick="javascript: load_table_keranjang_retur();" class="btn btn-sm btn-warning pull-right"><i class="fa fa-refresh"></i> Save/Refresh</button></th>
+      <th><button type="button" onclick="javascript: load_table_keranjang_retur();" class="btn btn-sm btn-success pull-right"><i class="fa fa-refresh"></i> Hitung / Refresh</button></th>
     </tr>
   </thead>
   <tbody id="keranjang-diterima">
@@ -39,6 +39,7 @@
                     <input type="hidden" name="sisa[{{ item.product.pk }}]" id="txt-sisa-{{ item.product.pk }}" value="{% remain_stock_return item.product.pk item.quantity %}">
                     <th style="width: 80px"></th>
                     <input type="hidden" name="product" value="{{ item.product.pk }}">
+                    <input type="hidden" id="qty-{{ item.product.pk }}" value="{{ item.quantity }}">
                 </tr>
                 {% customer_return_tags item.product.pk item.quantity %}
             </table>
