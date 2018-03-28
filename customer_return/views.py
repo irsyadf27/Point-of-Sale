@@ -41,6 +41,9 @@ def get_invoice(request, invoice_number):
     for produk in invoice.details.all():
         product = Product.objects.get(id=produk.product_warehouse.product.pk)
         qty = ReturDetail.objects.filter(Q(product_warehouse__product=product) & Q(retur__invoice=invoice)).aggregate(Sum('qty'))['qty__sum']
+        if qty is None:
+            qty = 0
+
         if produk.qty - qty > 0:
             cart.add(product, price=(product.selling_price - conf.potongan), quantity=(produk.qty - qty))
 
@@ -102,7 +105,7 @@ def checkout(request):
 
         retur = Retur(
             invoice=invoice,
-            actor=request.user,
+            cashier=request.user,
             qty=cart.count,
             total=cart.total,
             potongan=conf.potongan
@@ -125,6 +128,7 @@ def checkout(request):
                         retur=retur,
                         product_warehouse=obj_warehouse,
                         qty=z[1],
+                        selling_price=obj_product.selling_price,
                         subtotal=(obj_product.selling_price - conf.potongan) * float(z[1])
                         )
                     retur_detail.save()
